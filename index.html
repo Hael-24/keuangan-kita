@@ -16,16 +16,8 @@
   </header>
 
   <main class="container">
-    <section id="setupCard" class="card">
-      <h2>Hubungkan database</h2>
-      <p class="muted">Masukkan URL dan anon key project Supabase. Data akan tersimpan online sehingga bisa dipakai berdua.</p>
-      <input id="supabaseUrl" placeholder="https://xxxx.supabase.co">
-      <input id="supabaseKey" placeholder="Supabase anon/publishable key" type="password">
-      <button id="saveConfig">Simpan & mulai</button>
-      <p class="small">Konfigurasi ini hanya disimpan di browser perangkat ini.</p>
-    </section>
-
-    <section id="authCard" class="card hidden">
+    <!-- Kartu Login / Register (Langsung Tampil) -->
+    <section id="authCard" class="card">
       <div class="tabs">
         <button class="tab active" data-mode="login">Masuk</button>
         <button class="tab" data-mode="signup">Daftar</button>
@@ -37,6 +29,7 @@
       <p id="authMsg" class="small"></p>
     </section>
 
+    <!-- Aplikasi Utama (Tampil Setelah Login) -->
     <section id="app" class="hidden">
       <div class="toolbar">
         <div>
