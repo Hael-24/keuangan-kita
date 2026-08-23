@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Investasi Hilal - Keuangan Kita</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+  <header class="topbar">
+    <div>
+      <h1>Investasi Hilal</h1>
+      <p>Portofolio Aset Rupiah & Dollar</p>
+    </div>
+    <div class="topbar-actions">
+      <a href="index.html" class="nav-btn" style="text-decoration:none; display:inline-block; padding:8px 12px; background:#eef1f6; border-radius:8px; font-weight:600; color:#1f6feb;">← Kembali ke Dashboard</a>
+      <button id="logoutBtn" class="ghost hidden">Keluar</button>
+    </div>
+  </header>
+
+  <main class="container">
+    <section id="app">
+      <div class="toolbar">
+        <div>
+          <label>Bulan Periode</label>
+          <input id="month" type="month">
+        </div>
+        <button id="addBtn">+ Tambah Investasi</button>
+      </div>
+
+      <!-- Ringkasan Investasi Rupiah & Dollar -->
+      <div class="grid two" style="margin-bottom:16px;">
+        <div class="stat primary">
+          <span>Total Investasi (Rupiah / IDR)</span>
+          <strong id="totalIdr">Rp0</strong>
+        </div>
+        <div class="stat" style="background:#0f172a; color:#fff;">
+          <span style="color:#94a3b8;">Total Investasi (Dollar / USD)</span>
+          <strong id="totalUsd" style="color:#38bdf8;">$0.00</strong>
+        </div>
+      </div>
+
+      <section class="card">
+        <div class="sectionHead"><h2>Riwayat Transaksi Investasi</h2></div>
+        <div id="transactions" class="transactions"></div>
+      </section>
+    </section>
+  </main>
+
+  <!-- Modal Dialog Tambah Investasi -->
+  <dialog id="txDialog">
+    <form method="dialog" id="txForm">
+      <h2>Catat Investasi</h2>
+      <label>Tanggal<input id="txDate" type="date" required></label>
+      <label>Mata Uang
+        <select id="txCurrency">
+          <option value="IDR">Rupiah (IDR)</option>
+          <option value="USD">Dollar (USD)</option>
+        </select>
+      </label>
+      <label>Nominal<input id="txAmount" type="number" step="any" min="0.01" required placeholder="100000 atau 50"></label>
+      <label>Kategori Aset
+        <select id="txCategory">
+          <option>Saham Indonesia</option>
+          <option>Saham US / Global</option>
+          <option>Kripto</option>
+          <option>Reksadana</option>
+          <option>Emas</option>
+          <option>Lainnya</option>
+        </select>
+      </label>
+      <label>Catatan / Nama Aset<input id="txNote" maxlength="120" placeholder="Contoh: BBCA / AAPL / BTC"></label>
+      <div class="dialogActions">
+        <button type="button" id="cancelTx" class="ghost">Batal</button>
+        <button type="submit">Simpan</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script src="investasi.js"></script>
+</body>
+</html>
