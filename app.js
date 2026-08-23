@@ -11,7 +11,6 @@ const today = new Date();
 $("month").value = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}`;
 $("txDate").value = today.toISOString().slice(0, 10);
 
-// Inisialisasi Supabase Otomatis
 try {
   sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
   sb.auth.getSession().then(({ data }) => data.session ? showApp() : showAuth());
@@ -59,12 +58,23 @@ $("logoutBtn").onclick = () => sb.auth.signOut();
 $("month").onchange = loadTransactions;
 $("walletFilter").onchange = render;
 
-$("addBtn").onclick = () => $("txDialog").showModal();
+// Buka Modal Tambah Transaksi
+$("addBtn").onclick = () => {
+  $("txForm").reset();
+  $("txId").value = "";
+  $("dialogTitle").textContent = "Tambah transaksi";
+  $("txDate").value = today.toISOString().slice(0, 10);
+  $("txDialog").showModal();
+};
+
 $("cancelTx").onclick = () => $("txDialog").close();
 
+// Submit Form (Tambah / Edit)
 $("txForm").onsubmit = async (e) => {
   e.preventDefault();
   const { data: { user } } = await sb.auth.getUser();
+  const txId = $("txId").value;
+  
   const row = {
     user_id: user.id,
     date: $("txDate").value,
@@ -74,12 +84,49 @@ $("txForm").onsubmit = async (e) => {
     wallet: $("txWallet").value,
     note: $("txNote").value.trim()
   };
-  const { error } = await sb.from("transactions").insert(row);
+
+  let error = null;
+  if (txId) {
+    // Edit (Update) Transaksi
+    const res = await sb.from("transactions").update(row).eq("id", txId);
+    error = res.error;
+  } else {
+    // Tambah (Insert) Transaksi Baru
+    const res = await sb.from("transactions").insert(row);
+    error = res.error;
+  }
+
   if (error) return alert(error.message);
   
   $("txForm").reset();
-  $("txDate").value = today.toISOString().slice(0, 10);
   $("txDialog").close();
+  loadTransactions();
+};
+
+// Fungsi Mengisi Form untuk Edit
+window.editTx = (id) => {
+  const t = transactions.find(item => item.id == id);
+  if (!t) return;
+  
+  $("txId").value = t.id;
+  $("txDate").value = t.date;
+  $("txType").value = t.type;
+  $("txAmount").value = t.amount;
+  $("txCategory").value = t.category;
+  $("txWallet").value = t.wallet;
+  $("txNote").value = t.note || "";
+  
+  $("dialogTitle").textContent = "Edit transaksi";
+  $("txDialog").showModal();
+};
+
+// Fungsi Hapus Transaksi
+window.deleteTx = async (id) => {
+  if (!confirm("Apakah Anda yakin ingin menghapus transaksi ini?")) return;
+  
+  const { error } = await sb.from("transactions").delete().eq("id", id);
+  if (error) return alert("Gagal menghapus: " + error.message);
+  
   loadTransactions();
 };
 
@@ -110,7 +157,19 @@ function render() {
   ).join("") || '<p class="muted">Belum ada pengeluaran.</p>';
   
   $("transactions").innerHTML = filtered.slice(0, 50).map(t => 
-    `<div class="tx"><div><div class="note">${escapeHtml(t.note || t.category)}</div><div class="meta">${t.date} · ${escapeHtml(t.category)} · ${escapeHtml(t.wallet)}</div></div><div class="money ${t.type === "expense" ? "expenseMoney" : "incomeMoney"}">${t.type === "expense" ? "-" : "+"}${rupiah(t.amount)}</div></div>`
+    `<div class="tx">
+      <div>
+        <div class="note">${escapeHtml(t.note || t.category)}</div>
+        <div class="meta">${t.date} · ${escapeHtml(t.category)} · ${escapeHtml(t.wallet)}</div>
+      </div>
+      <div style="text-align: right;">
+        <div class="money ${t.type === "expense" ? "expenseMoney" : "incomeMoney"}">${t.type === "expense" ? "-" : "+"}${rupiah(t.amount)}</div>
+        <div style="margin-top: 4px; font-size: 12px;">
+          <a href="#" onclick="editTx(${t.id}); return false;" style="color: #1f6feb; margin-right: 8px; text-decoration: none;">Edit</a>
+          <a href="#" onclick="deleteTx(${t.id}); return false;" style="color: #c0392b; text-decoration: none;">Hapus</a>
+        </div>
+      </div>
+    </div>`
   ).join("") || '<p class="muted">Belum ada transaksi bulan ini.</p>';
 }
 
