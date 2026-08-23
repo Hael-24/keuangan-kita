@@ -15,12 +15,12 @@
     </div>
     <div class="topbar-actions">
       <nav id="mainNav" class="nav-links hidden">
-        <button class="nav-btn active" onclick="switchPage('dashboard')">Dashboard</button>
-        <button class="nav-btn" onclick="switchPage('date')">Keuangan Date</button>
-        <button class="nav-btn" onclick="switchPage('tabungan')">Tabungan</button>
-        <button class="nav-btn" onclick="switchPage('pribadi')">Keuangan Pribadi</button>
+        <button type="button" class="nav-btn active" data-page="dashboard">Dashboard</button>
+        <button type="button" class="nav-btn" data-page="date">Keuangan Date</button>
+        <button type="button" class="nav-btn" data-page="tabungan">Tabungan</button>
+        <button type="button" class="nav-btn" data-page="pribadi">Keuangan Pribadi</button>
       </nav>
-      <button id="logoutBtn" class="ghost hidden">Keluar</button>
+      <button id="logoutBtn" type="button" class="ghost hidden">Keluar</button>
     </div>
   </header>
 
@@ -28,13 +28,13 @@
     <!-- Form Login/Daftar -->
     <section id="authCard" class="card">
       <div class="tabs">
-        <button class="tab active" data-mode="login">Masuk</button>
-        <button class="tab" data-mode="signup">Daftar</button>
+        <button type="button" class="tab active" data-mode="login">Masuk</button>
+        <button type="button" class="tab" data-mode="signup">Daftar</button>
       </div>
       <h2 id="authTitle">Masuk</h2>
       <input id="email" type="email" placeholder="Email">
       <input id="password" type="password" placeholder="Password">
-      <button id="authBtn">Masuk</button>
+      <button type="button" id="authBtn">Masuk</button>
       <p id="authMsg" class="small" style="margin-top:8px;"></p>
     </section>
 
@@ -45,7 +45,7 @@
           <label>Bulan Periode</label>
           <input id="month" type="month">
         </div>
-        <button id="addBtn">+ Transaksi Baru</button>
+        <button type="button" id="addBtn">+ Transaksi Baru</button>
       </div>
 
       <!-- HALAMAN 1: DASHBOARD -->
