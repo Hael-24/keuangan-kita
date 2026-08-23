@@ -3,73 +3,112 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Keuangan Kita</title>
+  <title>Keuangan Kita - Pro Dashboard</title>
   <link rel="stylesheet" href="style.css">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
   <header class="topbar">
-    <div>
+    <div class="brand">
       <h1>Keuangan Kita</h1>
-      <p>Catatan keuangan bersama</p>
+      <span class="badge">Pro Dashboard</span>
     </div>
-    <button id="logoutBtn" class="ghost hidden">Keluar</button>
+    <div class="topbar-actions">
+      <nav id="mainNav" class="nav-links hidden">
+        <button class="nav-btn active" data-page="dashboard">Dashboard</button>
+        <button class="nav-btn" data-page="date">Keuangan Date</button>
+        <button class="nav-btn" data-page="tabungan">Tabungan</button>
+        <button class="nav-btn" data-page="pribadi">Keuangan Pribadi</button>
+      </nav>
+      <button id="logoutBtn" class="ghost hidden">Keluar</button>
+    </div>
   </header>
 
   <main class="container">
+    <!-- Form Auth (Login/Register) -->
     <section id="authCard" class="card">
       <div class="tabs">
-        <button class="tab active" data-mode="login">Masuk</button>
-        <button class="tab" data-mode="signup">Daftar</button>
+        <button type="button" class="tab active" data-mode="login">Masuk</button>
+        <button type="button" class="tab" data-mode="signup">Daftar</button>
       </div>
       <h2 id="authTitle">Masuk</h2>
       <input id="email" type="email" placeholder="Email">
       <input id="password" type="password" placeholder="Password">
-      <button id="authBtn">Masuk</button>
+      <button type="button" id="authBtn">Masuk</button>
       <p id="authMsg" class="small" style="margin-top:8px;"></p>
     </section>
 
-    <section id="app" class="hidden">
-      <div class="toolbar">
-        <div>
-          <label>Bulan</label>
-          <input id="month" type="month">
+    <!-- Aplikasi Utama (4 Halaman) -->
+    <div id="app" class="hidden">
+      <!-- Filter Bulan Global -->
+      <div class="global-filter card">
+        <label>Filter Periode Bulan:</label>
+        <input id="globalMonth" type="month">
+      </div>
+
+      <!-- PAGE 1: DASHBOARD UTAMA -->
+      <section id="page-dashboard" class="page-content">
+        <div class="grid stats-4">
+          <div class="stat primary"><span>Total Saldo Gabungan</span><strong id="dashTotalNet">Rp0</strong></div>
+          <div class="stat"><span>Saldo Date</span><strong id="dashNetDate">Rp0</strong></div>
+          <div class="stat"><span>Total Tabungan</span><strong id="dashNetTabungan">Rp0</strong></div>
+          <div class="stat"><span>Saldo Pribadi</span><strong id="dashNetPribadi">Rp0</strong></div>
         </div>
-        <div>
-          <label>Dompet</label>
-          <select id="walletFilter">
-            <option value="all">Semua</option>
-            <option value="bersama">Bersama / Date</option>
-            <option value="hilal">Pribadi Hilal</option>
-            <option value="pasangan">Tabungan</option>
-          </select>
+
+        <div class="grid two">
+          <section class="card">
+            <h2>Ringkasan Arus Kas Bulan Ini</h2>
+            <div class="summary-list">
+              <div class="summary-item"><span>Total Pemasukan</span><strong id="dashTotalIncome" class="incomeMoney">Rp0</strong></div>
+              <div class="summary-item"><span>Total Pengeluaran</span><strong id="dashTotalExpense" class="expenseMoney">Rp0</strong></div>
+            </div>
+          </section>
+
+          <section class="card">
+            <h2>Transaksi Terbaru (Semua Modul)</h2>
+            <div id="dashTransactions" class="transactions"></div>
+          </section>
         </div>
-        <button id="addBtn">+ Transaksi</button>
-      </div>
+      </section>
 
-      <div class="grid stats">
-        <div class="stat"><span>Pemasukan</span><strong id="income">Rp0</strong></div>
-        <div class="stat"><span>Pengeluaran</span><strong id="expense">Rp0</strong></div>
-        <div class="stat"><span>Saldo bersih</span><strong id="net">Rp0</strong></div>
-      </div>
+      <!-- PAGE 2, 3, 4: MODUL SPESIFIK (DATE / TABUNGAN / PRIBADI) -->
+      <section id="page-module" class="page-content hidden">
+        <div class="module-header card">
+          <h2 id="moduleTitle">Modul Keuangan</h2>
+          <button id="addBtn">+ Tambah Transaksi</button>
+        </div>
 
-      <div class="grid two">
-        <section class="card">
-          <div class="sectionHead"><h2>Pengeluaran per kategori</h2></div>
-          <div id="categories" class="categoryList"></div>
-        </section>
+        <div class="grid stats">
+          <div class="stat"><span>Pemasukan</span><strong id="modIncome">Rp0</strong></div>
+          <div class="stat"><span>Pengeluaran</span><strong id="modExpense">Rp0</strong></div>
+          <div class="stat"><span>Saldo Bersih</span><strong id="modNet">Rp0</strong></div>
+        </div>
 
-        <section class="card">
-          <div class="sectionHead"><h2>Transaksi terbaru</h2><span id="count" class="muted"></span></div>
-          <div id="transactions" class="transactions"></div>
-        </section>
-      </div>
-    </section>
+        <div class="grid two">
+          <section class="card">
+            <h2>Pengeluaran per Kategori</h2>
+            <div id="modCategories" class="categoryList"></div>
+          </section>
+
+          <section class="card">
+            <div class="sectionHead">
+              <h2>Daftar Transaksi</h2>
+              <span id="modCount" class="muted"></span>
+            </div>
+            <div id="modTransactions" class="transactions"></div>
+          </section>
+        </div>
+      </section>
+    </div>
   </main>
 
+  <!-- Modal Form Transaksi -->
   <dialog id="txDialog">
     <form method="dialog" id="txForm">
-      <h2>Tambah transaksi</h2>
+      <h2 id="dialogTitle">Tambah Transaksi</h2>
+      <input type="hidden" id="txId">
+      <input type="hidden" id="txWallet">
+      
       <label>Tanggal<input id="txDate" type="date" required></label>
       <label>Jenis
         <select id="txType"><option value="expense">Pengeluaran</option><option value="income">Pemasukan</option></select>
@@ -83,13 +122,6 @@
           <option>Bonus</option><option>Lainnya</option>
         </select>
       </label>
-      <label>Dompet / Modul
-        <select id="txWallet">
-          <option value="bersama">Bersama / Date</option>
-          <option value="hilal">Pribadi Hilal</option>
-          <option value="pasangan">Tabungan</option>
-        </select>
-      </label>
       <label>Catatan<input id="txNote" maxlength="120" placeholder="Contoh: makan siang"></label>
       <div class="dialogActions">
         <button type="button" id="cancelTx" class="ghost">Batal</button>
@@ -101,4 +133,3 @@
   <script src="app.js"></script>
 </body>
 </html>
-
