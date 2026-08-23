@@ -16,7 +16,6 @@
   </header>
 
   <main class="container">
-    <!-- Kartu Login / Register (Langsung Tampil) -->
     <section id="authCard" class="card">
       <div class="tabs">
         <button class="tab active" data-mode="login">Masuk</button>
@@ -29,7 +28,6 @@
       <p id="authMsg" class="small"></p>
     </section>
 
-    <!-- Aplikasi Utama (Tampil Setelah Login) -->
     <section id="app" class="hidden">
       <div class="toolbar">
         <div>
@@ -68,9 +66,12 @@
     </section>
   </main>
 
+  <!-- Modal Form Tambah / Edit -->
   <dialog id="txDialog">
     <form method="dialog" id="txForm">
-      <h2>Tambah transaksi</h2>
+      <h2 id="dialogTitle">Tambah transaksi</h2>
+      <input type="hidden" id="txId">
+      
       <label>Tanggal<input id="txDate" type="date" required></label>
       <label>Jenis
         <select id="txType"><option value="expense">Pengeluaran</option><option value="income">Pemasukan</option></select>
@@ -88,7 +89,10 @@
         <select id="txWallet"><option value="bersama">Bersama</option><option value="hilal">Hilal</option><option value="pasangan">Pasangan</option></select>
       </label>
       <label>Catatan<input id="txNote" maxlength="120" placeholder="Contoh: makan siang"></label>
-      <div class="dialogActions"><button type="button" id="cancelTx" class="ghost">Batal</button><button type="submit">Simpan</button></div>
+      <div class="dialogActions">
+        <button type="button" id="cancelTx" class="ghost">Batal</button>
+        <button type="submit">Simpan</button>
+      </div>
     </form>
   </dialog>
 
