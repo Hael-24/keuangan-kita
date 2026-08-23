@@ -6,8 +6,11 @@ const today=new Date();
 $("month").value=`${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,"0")}`;
 $("txDate").value=today.toISOString().slice(0,10);
 
-const saved=JSON.parse(localStorage.getItem("keuangan_config")||"null");
-if(saved){$("supabaseUrl").value=saved.url;$("supabaseKey").value=saved.key;connect(saved.url,saved.key)}
+// --- KONFIGURASI OTOMATIS SUPABASE ---
+const defaultUrl = "https://hlyzobxyijwndohxwhuo.supabase.co";
+const defaultKey = "sb_publishable_eb1wANvveNRCPxXYvnNG7A_L3BDkzYL"; 
+
+connect(defaultUrl, defaultKey);
 
 $("saveConfig").onclick=()=>{const url=$("supabaseUrl").value.trim(),key=$("supabaseKey").value.trim();if(!url||!key)return alert("Isi URL dan key Supabase.");localStorage.setItem("keuangan_config",JSON.stringify({url,key}));connect(url,key)};
 
@@ -61,3 +64,7 @@ function render(){
  $("transactions").innerHTML=filtered.slice(0,50).map(t=>`<div class="tx"><div><div class="note">${escapeHtml(t.note||t.category)}</div><div class="meta">${t.date} · ${escapeHtml(t.category)} · ${escapeHtml(t.wallet)}</div></div><div class="money ${t.type==="expense"?"expenseMoney":"incomeMoney"}">${t.type==="expense"?"-":"+"}${rupiah(t.amount)}</div></div>`).join("")||'<p class="muted">Belum ada transaksi bulan ini.</p>';
 }
 function escapeHtml(s){return String(s).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
+```[cite: 1]
+
+---
+
