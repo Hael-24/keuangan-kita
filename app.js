@@ -6,28 +6,16 @@ const today=new Date();
 $("month").value=`${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,"0")}`;
 $("txDate").value=today.toISOString().slice(0,10);
 
-// --- KONFIGURASI OTOMATIS SUPABASE ---
-const defaultUrl = "https://hlyzobxyijwndohxwhuo.supabase.co";
-const defaultKey = "sb_publishable_eb1wANvveNRCPxXYvnNG7A_L3BDkzYL"; 
-
-// Isi form dan jalankan koneksi secara otomatis
-if ($("supabaseUrl")) $("supabaseUrl").value = defaultUrl;
-if ($("supabaseKey")) $("supabaseKey").value = defaultKey;
-connect(defaultUrl, defaultKey);
+const saved=JSON.parse(localStorage.getItem("keuangan_config")||"null");
+if(saved){$("supabaseUrl").value=saved.url;$("supabaseKey").value=saved.key;connect(saved.url,saved.key)}
 
 $("saveConfig").onclick=()=>{const url=$("supabaseUrl").value.trim(),key=$("supabaseKey").value.trim();if(!url||!key)return alert("Isi URL dan key Supabase.");localStorage.setItem("keuangan_config",JSON.stringify({url,key}));connect(url,key)};
 
 function connect(url,key){
-  try{
-    sb=window.supabase.createClient(url,key);
-    $("setupCard").classList.add("hidden");
-    $("authCard").classList.remove("hidden");
+  try{sb=window.supabase.createClient(url,key);$("setupCard").classList.add("hidden");$("authCard").classList.remove("hidden");
     sb.auth.getSession().then(({data})=>data.session?showApp():null);
     sb.auth.onAuthStateChange((event,session)=>session?showApp():showAuth());
-  }catch(e){
-    console.error("Error koneksi Supabase:", e);
-    $("setupCard").classList.remove("hidden");
-  }
+  }catch(e){alert("Konfigurasi Supabase tidak valid.")}
 }
 function showAuth(){ $("app").classList.add("hidden");$("logoutBtn").classList.add("hidden");$("authCard").classList.remove("hidden")}
 function showApp(){ $("authCard").classList.add("hidden");$("app").classList.remove("hidden");$("logoutBtn").classList.remove("hidden");loadTransactions() }
@@ -73,11 +61,3 @@ function render(){
  $("transactions").innerHTML=filtered.slice(0,50).map(t=>`<div class="tx"><div><div class="note">${escapeHtml(t.note||t.category)}</div><div class="meta">${t.date} · ${escapeHtml(t.category)} · ${escapeHtml(t.wallet)}</div></div><div class="money ${t.type==="expense"?"expenseMoney":"incomeMoney"}">${t.type==="expense"?"-":"+"}${rupiah(t.amount)}</div></div>`).join("")||'<p class="muted">Belum ada transaksi bulan ini.</p>';
 }
 function escapeHtml(s){return String(s).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
-```[cite: 1]
-
----
-
-### Langkah Verifikasi Setelah Dibuat:
-1. Salin kode di atas, edit file `app.js` di GitHub, lalu simpan (**Commit changes...**)[cite: 1].
-2. Tunggu **2-3 menit** (GitHub Pages membutuhkan waktu beberapa menit untuk build ulang setelah commit baru).
-3. Buka link website GitHub Pages kamu. Sekarang tampilan akan langsung masuk ke form **Masuk / Daftar**[cite: 1, 3]!
