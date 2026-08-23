@@ -7,7 +7,6 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <!-- Topbar Navigasi Utama -->
   <header class="topbar">
     <div class="brand">
       <h1>Keuangan Kita</h1>
@@ -28,19 +27,18 @@
     <!-- Form Auth (Login/Register) -->
     <section id="authCard" class="card">
       <div class="tabs">
-        <button class="tab active" data-mode="login">Masuk</button>
-        <button class="tab" data-mode="signup">Daftar</button>
+        <button type="button" class="tab active" data-mode="login">Masuk</button>
+        <button type="button" class="tab" data-mode="signup">Daftar</button>
       </div>
       <h2 id="authTitle">Masuk</h2>
       <input id="email" type="email" placeholder="Email">
       <input id="password" type="password" placeholder="Password">
-      <button id="authBtn">Masuk</button>
+      <button type="button" id="authBtn">Masuk</button>
       <p id="authMsg" class="small"></p>
     </section>
 
     <!-- Aplikasi Utama -->
     <div id="app" class="hidden">
-      <!-- Top Filter Bulan Global -->
       <div class="global-filter card">
         <label>Filter Periode Bulan:</label>
         <input id="globalMonth" type="month">
@@ -71,7 +69,7 @@
         </div>
       </section>
 
-      <!-- PAGE 2, 3, 4: MODUL SPESIFIK (DATE / TABUNGAN / PRIBADI) -->
+      <!-- PAGE 2, 3, 4: MODUL SPESIFIK -->
       <section id="page-module" class="page-content hidden">
         <div class="module-header card">
           <h2 id="moduleTitle">Modul Keuangan</h2>
@@ -102,7 +100,6 @@
     </div>
   </main>
 
-  <!-- Modal Form Tambah / Edit -->
   <dialog id="txDialog">
     <form method="dialog" id="txForm">
       <h2 id="dialogTitle">Tambah Transaksi</h2>
@@ -130,7 +127,8 @@
     </form>
   </dialog>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <!-- Pustaka Supabase -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
   <script src="app.js"></script>
 </body>
 </html>
