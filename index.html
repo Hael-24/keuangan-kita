@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Keuangan Kita</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="topbar">
+    <div>
+      <h1>Keuangan Kita</h1>
+      <p>Catatan keuangan bersama</p>
+    </div>
+    <button id="logoutBtn" class="ghost hidden">Keluar</button>
+  </header>
+
+  <main class="container">
+    <section id="setupCard" class="card">
+      <h2>Hubungkan database</h2>
+      <p class="muted">Masukkan URL dan anon key project Supabase. Data akan tersimpan online sehingga bisa dipakai berdua.</p>
+      <input id="supabaseUrl" placeholder="https://xxxx.supabase.co">
+      <input id="supabaseKey" placeholder="Supabase anon/publishable key" type="password">
+      <button id="saveConfig">Simpan & mulai</button>
+      <p class="small">Konfigurasi ini hanya disimpan di browser perangkat ini.</p>
+    </section>
+
+    <section id="authCard" class="card hidden">
+      <div class="tabs">
+        <button class="tab active" data-mode="login">Masuk</button>
+        <button class="tab" data-mode="signup">Daftar</button>
+      </div>
+      <h2 id="authTitle">Masuk</h2>
+      <input id="email" type="email" placeholder="Email">
+      <input id="password" type="password" placeholder="Password">
+      <button id="authBtn">Masuk</button>
+      <p id="authMsg" class="small"></p>
+    </section>
+
+    <section id="app" class="hidden">
+      <div class="toolbar">
+        <div>
+          <label>Bulan</label>
+          <input id="month" type="month">
+        </div>
+        <div>
+          <label>Dompet</label>
+          <select id="walletFilter">
+            <option value="all">Semua</option>
+            <option value="bersama">Bersama</option>
+            <option value="hilal">Hilal</option>
+            <option value="pasangan">Pasangan</option>
+          </select>
+        </div>
+        <button id="addBtn">+ Transaksi</button>
+      </div>
+
+      <div class="grid stats">
+        <div class="stat"><span>Pemasukan</span><strong id="income">Rp0</strong></div>
+        <div class="stat"><span>Pengeluaran</span><strong id="expense">Rp0</strong></div>
+        <div class="stat"><span>Saldo bersih</span><strong id="net">Rp0</strong></div>
+      </div>
+
+      <div class="grid two">
+        <section class="card">
+          <div class="sectionHead"><h2>Pengeluaran per kategori</h2></div>
+          <div id="categories" class="categoryList"></div>
+        </section>
+
+        <section class="card">
+          <div class="sectionHead"><h2>Transaksi terbaru</h2><span id="count" class="muted"></span></div>
+          <div id="transactions" class="transactions"></div>
+        </section>
+      </div>
+    </section>
+  </main>
+
+  <dialog id="txDialog">
+    <form method="dialog" id="txForm">
+      <h2>Tambah transaksi</h2>
+      <label>Tanggal<input id="txDate" type="date" required></label>
+      <label>Jenis
+        <select id="txType"><option value="expense">Pengeluaran</option><option value="income">Pemasukan</option></select>
+      </label>
+      <label>Nominal<input id="txAmount" type="number" min="1" step="1" required placeholder="25000"></label>
+      <label>Kategori
+        <select id="txCategory">
+          <option>Makanan</option><option>Transportasi</option><option>Belanja</option>
+          <option>Tagihan</option><option>Rumah</option><option>Hiburan</option>
+          <option>Kesehatan</option><option>Investasi</option><option>Gaji</option>
+          <option>Bonus</option><option>Lainnya</option>
+        </select>
+      </label>
+      <label>Dompet
+        <select id="txWallet"><option value="bersama">Bersama</option><option value="hilal">Hilal</option><option value="pasangan">Pasangan</option></select>
+      </label>
+      <label>Catatan<input id="txNote" maxlength="120" placeholder="Contoh: makan siang"></label>
+      <div class="dialogActions"><button type="button" id="cancelTx" class="ghost">Batal</button><button type="submit">Simpan</button></div>
+    </form>
+  </dialog>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="app.js"></script>
+</body>
+</html>
