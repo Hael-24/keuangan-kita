@@ -1,3 +1,4 @@
+```css
 *{box-sizing:border-box}
 body{margin:0;font-family:Inter,system-ui,-apple-system,sans-serif;background:#f4f6f9;color:#1e293b}
 .topbar{background:#fff;border-bottom:1px solid #e2e8f0;padding:14px 24px;display:flex;justify-content:space-between;align-items:center}
@@ -34,3 +35,4 @@ button.ghost{background:#f1f5f9;color:#475569}
 .tx{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #f1f5f9}
 .money{font-weight:700}.expenseMoney{color:#dc2626}.incomeMoney{color:#16a34a}
 dialog{border:0;border-radius:12px;padding:20px;width:min(400px,90%)}
+```[cite: 4]
