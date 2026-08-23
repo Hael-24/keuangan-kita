@@ -1,6 +1,6 @@
 // --- DATABASE CONFIGURATION ---
 const SUPABASE_URL = "https://hlyzobxyijwndohxwhuo.supabase.co";
-const SUPABASE_KEY = "sb_publishable_eb1wANvveNRCPxXYvnNG7A_L3BDkzYL";
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhseXpvYnh5aWp3bmRvaHh3aHVvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc0NjQ5NzksImV4cCI6MjEwMzA0MDk3OX0.4eAwD2XB0OMBaoe0wcXHgi7b42r4B8GC6qV2iU6mTIE";
 
 let sb = null, authMode = "login", transactions = [], activePage = "dashboard";
 
