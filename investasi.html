@@ -11,11 +11,11 @@
   <header class="topbar">
     <div>
       <h1>Investasi Hilal</h1>
-      <p>Portofolio Aset Rupiah & Dollar</p>
+      <p>Portofolio Aset Mandiri (IDR & USD)</p>
     </div>
     <div class="topbar-actions">
       <a href="index.html" class="nav-btn" style="text-decoration:none; display:inline-block; padding:8px 12px; background:#eef1f6; border-radius:8px; font-weight:600; color:#1f6feb;">← Kembali ke Dashboard</a>
-      <button id="logoutBtn" class="ghost hidden">Keluar</button>
+      <button id="logoutBtn" type="button" class="ghost hidden">Keluar</button>
     </div>
   </header>
 
@@ -23,43 +23,45 @@
     <section id="app">
       <div class="toolbar">
         <div>
-          <label>Bulan Periode</label>
+          <label>Filter Periode Bulan</label>
           <input id="month" type="month">
         </div>
-        <button id="addBtn">+ Tambah Investasi</button>
+        <button type="button" id="addBtn">+ Tambah Investasi</button>
       </div>
 
-      <!-- Ringkasan Investasi Rupiah & Dollar -->
+      <!-- Ringkasan Portfolio Independen -->
       <div class="grid two" style="margin-bottom:16px;">
         <div class="stat primary">
-          <span>Total Investasi (Rupiah / IDR)</span>
+          <span>Total Akumulasi Investasi (IDR)</span>
           <strong id="totalIdr">Rp0</strong>
         </div>
         <div class="stat" style="background:#0f172a; color:#fff;">
-          <span style="color:#94a3b8;">Total Investasi (Dollar / USD)</span>
+          <span style="color:#94a3b8;">Total Akumulasi Investasi (USD)</span>
           <strong id="totalUsd" style="color:#38bdf8;">$0.00</strong>
         </div>
       </div>
 
       <section class="card">
-        <div class="sectionHead"><h2>Riwayat Transaksi Investasi</h2></div>
+        <div class="sectionHead"><h2>Daftar Portofolio Aset</h2></div>
         <div id="transactions" class="transactions"></div>
       </section>
     </section>
   </main>
 
-  <!-- Modal Dialog Tambah Investasi -->
+  <!-- Modal Form Tambah & Edit Investasi -->
   <dialog id="txDialog">
     <form method="dialog" id="txForm">
-      <h2>Catat Investasi</h2>
+      <h2 id="dialogTitle">Catat Investasi</h2>
+      <input type="hidden" id="txId">
+
       <label>Tanggal<input id="txDate" type="date" required></label>
-      <label>Mata Uang
+      <label>Mata Uang (Kurs)
         <select id="txCurrency">
           <option value="IDR">Rupiah (IDR)</option>
           <option value="USD">Dollar (USD)</option>
         </select>
       </label>
-      <label>Nominal<input id="txAmount" type="number" step="any" min="0.01" required placeholder="100000 atau 50"></label>
+      <label>Nominal Investment<input id="txAmount" type="number" step="any" min="0.01" required placeholder="Contoh: 1000000 atau 50"></label>
       <label>Kategori Aset
         <select id="txCategory">
           <option>Saham Indonesia</option>
