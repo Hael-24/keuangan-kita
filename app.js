@@ -1,6 +1,5 @@
-
 const SUPABASE_URL = "https://hlyzobxyijwndohxwhuo.supabase.co";
-const SUPABASE_KEY = "sb_publishable_eb1wANvveNRCPxXYvnNG7A_L3BDkzYL";
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhseXpvYnh5aWp3bmRvaHh3aHVvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc0NjQ5NzksImV4cCI6MjEwMzA0MDk3OX0.4eAwD2XB0OMBaoe0wcXHgi7b42r4B8GC6qV2iU6mTIE";
 
 let sb = null, authMode = "login", transactions = [];
 
@@ -17,7 +16,7 @@ try {
   sb.auth.getSession().then(({ data }) => data?.session ? showApp() : showAuth());
   sb.auth.onAuthStateChange((event, session) => session ? showApp() : showAuth());
 } catch(e) { 
-  console.error(e); 
+  console.error("Supabase Error:", e); 
 }
 
 function showAuth() {
@@ -33,7 +32,7 @@ function showApp() {
   loadTransactions();
 }
 
-// Perpindahan Tab Masuk / Daftar
+// Event Tab Masuk / Daftar
 document.querySelectorAll(".tab").forEach(b => {
   b.onclick = () => {
     document.querySelectorAll(".tab").forEach(x => x.classList.remove("active"));
@@ -45,18 +44,30 @@ document.querySelectorAll(".tab").forEach(b => {
   };
 });
 
-// Klik Tombol Masuk / Daftar
+// Event Klik Tombol Auth
 $("authBtn").onclick = async () => {
   const email = $("email").value.trim(), password = $("password").value;
   if (!email || !password) return $("authMsg").textContent = "Email dan password wajib diisi.";
   
+  $("authMsg").style.color = "#1f6feb";
   $("authMsg").textContent = "Memproses...";
-  let res = authMode === "login" 
-    ? await sb.auth.signInWithPassword({ email, password }) 
-    : await sb.auth.signUp({ email, password });
 
-  if (res.error) $("authMsg").textContent = res.error.message;
-  else $("authMsg").textContent = authMode === "signup" ? "Akun dibuat. Cek email untuk verifikasi." : "Berhasil masuk.";
+  try {
+    let res = authMode === "login" 
+      ? await sb.auth.signInWithPassword({ email, password }) 
+      : await sb.auth.signUp({ email, password });
+
+    if (res.error) {
+      $("authMsg").style.color = "#c0392b";
+      $("authMsg").textContent = res.error.message;
+    } else {
+      $("authMsg").style.color = "#16834a";
+      $("authMsg").textContent = authMode === "signup" ? "Akun dibuat. Cek email untuk verifikasi." : "Berhasil masuk.";
+    }
+  } catch (err) {
+    $("authMsg").style.color = "#c0392b";
+    $("authMsg").textContent = "Gagal terhubung ke database. Cek API Key.";
+  }
 };
 
 $("logoutBtn").onclick = () => sb.auth.signOut();
