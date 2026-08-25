@@ -61,7 +61,7 @@ document.querySelectorAll(".nav-btn").forEach(btn => {
     } else {
       $("page-dashboard").classList.add("hidden");
       $("page-module").classList.remove("hidden");
-      const titles = { date: "Keuangan Date", tabungan: "Tabungan", pribadi: "Keuangan Pribadi" };
+      const titles = { date: "Keuangan Date", tabungan: "Tabungan", pribadi: "Keuangan Fany" };
       $("moduleTitle").textContent = titles[activePage];
     }
     render();
