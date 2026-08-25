@@ -172,7 +172,7 @@ function render() {
   const filtered = transactions.filter(t => t.date?.slice(0, 7) === month);
 
   // Kalkulasi Total Investasi Hilal (IDR + USD dikurangi Rp500)
-  const paypalRate = Math.max(0, usdToIdrRate - 500);
+  const paypalRate = Math.max(0, usdToIdrRate - 550);
   let totalInvIdr = 0;
   let totalInvUsd = 0;
 
