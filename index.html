@@ -1,28 +1,20 @@
 <!doctype html>
 <html lang="id">
-<header class="topbar">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Keuangan Kita - Pro</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+  <header class="topbar">
     <div class="brand-wrapper">
-      <!-- Jika kamu punya logo.png di repositori GitHub -->
-      <img src="logo.png" alt="Logo" class="app-logo" onerror="this.style.display='none'">
+      <img src="logo.png" alt="Logo" class="app-logo" style="height:36px; width:auto;" onerror="this.style.display='none'">
       <div>
         <h1>Keuangan Kita</h1>
         <p>Pro Financial Dashboard</p>
       </div>
-    </div>
-    <div class="topbar-actions">
-      <nav id="mainNav" class="nav-links hidden">
-        <button type="button" class="nav-btn active" data-page="dashboard">Dashboard</button>
-        <button type="button" class="nav-btn" data-page="date">Keuangan Date</button>
-        <button type="button" class="nav-btn" data-page="tabungan">Tabungan</button>
-        <button type="button" class="nav-btn" data-page="pribadi">Keuangan Pribadi</button>
-      </nav>
-      <button id="logoutBtn" type="button" class="ghost hidden">Keluar</button>
-    </div>
-  </header>
-  <header class="topbar">
-    <div>
-      <h1>Keuangan Kita</h1>
-      <p>Catatan keuangan bersama</p>
     </div>
     <div class="topbar-actions">
       <nav id="mainNav" class="nav-links hidden">
@@ -105,13 +97,13 @@
       </div>
 
       <!-- Kartu Tombol Menuju Investasi Hilal -->
-      <section class="card" style="margin-top:20px; background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); color:#fff; cursor:pointer;" onclick="window.location.href='investasi.html'">
+      <section class="card" style="margin-top:20px; background: #0284c7; color:#fff; cursor:pointer;" onclick="window.location.href='investasi.html'">
         <div style="display:flex; justify-content:space-between; align-items:center;">
           <div>
-            <h3 style="margin:0 0 4px 0; color:#38bdf8; font-size:16px;">📈 Portofolio Investasi Hilal</h3>
-            <p style="margin:0; font-size:12px; color:#94a3b8;">Klik di sini untuk mencatat dan memantau investasi IDR & USD</p>
+            <h3 style="margin:0 0 4px 0; color:#fff; font-size:16px;">📈 Portofolio Investasi Hilal</h3>
+            <p style="margin:0; font-size:12px; color:#e0f2fe;">Klik di sini untuk mencatat dan memantau investasi IDR & USD</p>
           </div>
-          <span style="font-size:20px; font-weight:bold; color:#38bdf8;">→</span>
+          <span style="font-size:20px; font-weight:bold; color:#fff;">→</span>
         </div>
       </section>
 
