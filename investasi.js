@@ -58,8 +58,8 @@ $("txForm").onsubmit = async (e) => {
     type: "income", 
     amount: Number($("txAmount").value),
     category: $("txCategory").value,
-    wallet: "investasi_hilal", // Wallet khusus terpisah
-    note: noteWithCurrency
+    wallet: "hilal", // <-- UBAH JADI "hilal" AGAR DITERIMA DATABASE
+    note: `[INVESTASI] ${noteWithCurrency}` // <-- TAMBAHKAN TAG [INVESTASI]
   };
 
   let res = txId 
@@ -102,9 +102,10 @@ window.deleteTx = async (id) => {
 };
 
 async function loadInvestments() {
-  const { data, error } = await sb.from("transactions").select("*").eq("wallet", "investasi_hilal").order("date", { ascending: false });
+  const { data, error } = await sb.from("transactions").select("*").eq("wallet", "hilal").order("date", { ascending: false });
   if (error) return console.error(error);
-  investments = data || [];
+  // Filter khusus hanya mengambil transaksi yang punya catatan [INVESTASI]
+  investments = (data || []).filter(t => t.note && t.note.includes("[INVESTASI]"));
   render();
 }
 
@@ -128,7 +129,7 @@ function render() {
 
   $("transactions").innerHTML = filtered.map(t => {
     const isUsd = t.note && t.note.includes("[USD]");
-    const cleanNote = t.note ? t.note.replace(/^\[(USD|IDR)\]\s*/, "").trim() : t.category;
+    const cleanNote = t.note ? t.note.replace("[INVESTASI]", "").replace(/^\[(USD|IDR)\]\s*/, "").replace(/\[(USD|IDR)\]/, "").trim() : t.category;
     const formattedAmount = isUsd ? dollar(t.amount) : rupiah(t.amount);
 
     return `<div class="tx">
