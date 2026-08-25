@@ -223,7 +223,7 @@ function render() {
   }
   $("income").textContent = rupiah(sumInc);
   $("expense").textContent = rupiah(sumExp);
-  $("dashTransactions").innerHTML = currentMonthTx.slice(0, 20).map(t => renderTxRow(t)).join("") || '<p class="muted">Belum ada transaksi bulan ini.</p>';
+  $("dashTransactions").innerHTML = currentMonthTx.slice(0, 25).map(t => renderTxRow(t)).join("") || '<p class="muted">Belum ada transaksi bulan ini.</p>';
 
   // --- RENDER MODUL SPESIFIK ---
   if (activePage !== "dashboard") {
