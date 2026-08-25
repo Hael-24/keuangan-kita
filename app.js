@@ -155,6 +155,34 @@ function render() {
   const month = $("month").value;
   const filtered = transactions.filter(t => t.date?.slice(0, 7) === month);
 
+  // ... (kode kalkulasi arus kas yang sudah ada) ...
+
+  // KODE BARU: Kalkulasi Total Investasi Hilal (IDR + USD dikurangi Rp500)
+  const paypalRate = Math.max(0, usdToIdrRate - 500); // Kurs Google dikurangi 500 Rupiah
+  
+  let totalInvIdr = 0;
+  let totalInvUsd = 0;
+
+  // Filter khusus wallet investasi_hilal
+  transactions.filter(t => t.wallet === "investasi_hilal").forEach(t => {
+    if (t.note && t.note.includes("[USD]")) {
+      totalInvUsd += t.amount;
+    } else {
+      totalInvIdr += t.amount;
+    }
+  });
+
+  // Konversi Dollar ke IDR dengan Rate PayPal + Gabungkan dengan IDR
+  const totalInvConverted = totalInvIdr + (totalInvUsd * paypalRate);
+
+  // Tampilkan ke Dashboard
+  if ($("dashNetInvestasi")) {
+    $("dashNetInvestasi").textContent = rupiah(totalInvConverted);
+  }
+  if ($("usdRateInfo")) {
+    $("usdRateInfo").innerHTML = `Rate USD: ${rupiah(usdToIdrRate)}<br><b style="color:#38bdf8;">Rate PayPal: ${rupiah(paypalRate)}</b>`;
+  }
+
   // Render Dashboard
   const sumInc = filtered.filter(t => t.type === "income").reduce((s, t) => s + t.amount, 0);
   const sumExp = filtered.filter(t => t.type === "expense").reduce((s, t) => s + t.amount, 0);
@@ -249,4 +277,21 @@ function renderChart(income, expense) {
       cutout: "70%" // Lebar lubang tengah donat
     }
   });
+// Variable simpan kurs (default asumsi Rp15.800 jika API gagal)
+let usdToIdrRate = 15800;
+
+// Fetch Kurs Dollar Real-time dari API publik
+async function fetchUsdRate() {
+  try {
+    const res = await fetch("https://open.er-api.com/v6/latest/USD");
+    const data = await res.json();
+    if (data && data.rates && data.rates.IDR) {
+      usdToIdrRate = data.rates.IDR;
+    }
+  } catch (e) {
+    console.warn("Gagal mengambil kurs online, menggunakan kurs estimasi default.", e);
+  }
 }
+
+// Panggil fetch kurs saat pertama kali script dimuat
+fetchUsdRate();
