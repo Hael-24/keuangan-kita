@@ -269,3 +269,36 @@ dialog {
   background: #0284c7;
   border-radius: 4px;
 }
+/* Penyesuaian Tampilan Otomatis untuk Layar HP (Mobile Responsive) */
+@media (max-width: 768px) {
+  /* Ubah semua grid 3 atau 4 kolom menjadi 1 kolom ke bawah */
+  .stats-4, .stats, .two {
+    grid-template-columns: 1fr !important;
+  }
+  
+  /* Rapikan posisi di bagian atas header */
+  .topbar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  
+  .topbar-actions {
+    width: 100%;
+    justify-content: space-between;
+    flex-wrap: wrap;
+  }
+  
+  .nav-links {
+    width: 100%;
+    overflow-x: auto;
+    padding-bottom: 4px;
+  }
+
+  /* Rapikan toolbar filter bulan */
+  .toolbar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+}
