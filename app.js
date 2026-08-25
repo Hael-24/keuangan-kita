@@ -218,7 +218,9 @@ function render() {
   $("dashNetDate").textContent = rupiah(netDate);
   $("dashNetTabungan").textContent = rupiah(netTabungan);
   $("dashNetPribadi").textContent = rupiah(netPribadi);
-  
+  if ($("dashCashNet")) {
+    $("dashCashNet").textContent = rupiah(netDate + netPribadi);
+  }
   $("income").textContent = rupiah(sumInc);
   $("expense").textContent = rupiah(sumExp);
   $("dashTransactions").innerHTML = currentMonthTx.slice(0, 20).map(t => renderTxRow(t)).join("") || '<p class="muted">Belum ada transaksi bulan ini.</p>';
