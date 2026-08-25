@@ -3,6 +3,7 @@ const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZ
 
 let sb = null, authMode = "login", transactions = [], activePage = "dashboard";
 let cashChart = null; // Penampung objek Chart.js
+let usdToIdrRate = 15800; // Variable simpan kurs (default)
 
 const $ = id => document.getElementById(id);
 const rupiah = n => new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 }).format(n);
@@ -10,6 +11,21 @@ const today = new Date();
 
 $("month").value = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}`;
 $("txDate").value = today.toISOString().slice(0, 10);
+
+// Fetch Kurs Dollar Real-time dari API publik
+async function fetchUsdRate() {
+  try {
+    const res = await fetch("https://open.er-api.com/v6/latest/USD");
+    const data = await res.json();
+    if (data && data.rates && data.rates.IDR) {
+      usdToIdrRate = data.rates.IDR;
+      render(); // Re-render jika rate berhasil didapat
+    }
+  } catch (e) {
+    console.warn("Gagal mengambil kurs online, menggunakan kurs estimasi default.", e);
+  }
+}
+fetchUsdRate();
 
 try {
   sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -155,15 +171,11 @@ function render() {
   const month = $("month").value;
   const filtered = transactions.filter(t => t.date?.slice(0, 7) === month);
 
-  // ... (kode kalkulasi arus kas yang sudah ada) ...
-
-  // KODE BARU: Kalkulasi Total Investasi Hilal (IDR + USD dikurangi Rp500)
-  const paypalRate = Math.max(0, usdToIdrRate - 500); // Kurs Google dikurangi 500 Rupiah
-  
+  // Kalkulasi Total Investasi Hilal (IDR + USD dikurangi Rp500)
+  const paypalRate = Math.max(0, usdToIdrRate - 500);
   let totalInvIdr = 0;
   let totalInvUsd = 0;
 
-  // Filter khusus wallet investasi_hilal
   transactions.filter(t => t.wallet === "investasi_hilal").forEach(t => {
     if (t.note && t.note.includes("[USD]")) {
       totalInvUsd += t.amount;
@@ -172,10 +184,8 @@ function render() {
     }
   });
 
-  // Konversi Dollar ke IDR dengan Rate PayPal + Gabungkan dengan IDR
   const totalInvConverted = totalInvIdr + (totalInvUsd * paypalRate);
 
-  // Tampilkan ke Dashboard
   if ($("dashNetInvestasi")) {
     $("dashNetInvestasi").textContent = rupiah(totalInvConverted);
   }
@@ -218,7 +228,7 @@ function render() {
 
     $("transactions").innerHTML = modTx.map(t => renderTxRow(t)).join("") || '<p class="muted">Belum ada transaksi di modul ini.</p>';
   }
-  // Tambahkan baris ini di paling bawah fungsi render()
+
   renderChart(sumInc, sumExp);
 }
 
@@ -241,23 +251,23 @@ function renderTxRow(t) {
 function escapeHtml(s) {
   return String(s).replace(/[&<>"']/g, m => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;" }[m]));
 }
+
 // Fungsi Membuat / Update Diagram Pie Arus Kas
 function renderChart(income, expense) {
   const ctx = document.getElementById("cashflowChart");
   if (!ctx) return;
 
-  // Hapus chart lama sebelum membuat chart baru agar tidak bertumpuk saat ganti bulan
   if (cashChart) {
     cashChart.destroy();
   }
 
   cashChart = new Chart(ctx, {
-    type: "doughnut", // Jenis pie chart donat
+    type: "doughnut",
     data: {
       labels: ["Pemasukan", "Pengeluaran"],
       datasets: [{
         data: [income, expense],
-        backgroundColor: ["#4ade80", "#f87171"], // Warna Hijau (Pemasukan) & Merah (Pengeluaran)
+        backgroundColor: ["#4ade80", "#f87171"],
         borderWidth: 0,
         hoverOffset: 6
       }]
@@ -274,24 +284,7 @@ function renderChart(income, expense) {
           }
         }
       },
-      cutout: "70%" // Lebar lubang tengah donat
+      cutout: "70%"
     }
   });
-// Variable simpan kurs (default asumsi Rp15.800 jika API gagal)
-let usdToIdrRate = 15800;
-
-// Fetch Kurs Dollar Real-time dari API publik
-async function fetchUsdRate() {
-  try {
-    const res = await fetch("https://open.er-api.com/v6/latest/USD");
-    const data = await res.json();
-    if (data && data.rates && data.rates.IDR) {
-      usdToIdrRate = data.rates.IDR;
-    }
-  } catch (e) {
-    console.warn("Gagal mengambil kurs online, menggunakan kurs estimasi default.", e);
-  }
 }
-
-// Panggil fetch kurs saat pertama kali script dimuat
-fetchUsdRate();
