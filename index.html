@@ -1,13 +1,24 @@
 <!doctype html>
 <html lang="id">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Keuangan Kita - Pro</title>
-  <link rel="stylesheet" href="style.css">
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-</head>
-<body>
+<header class="topbar">
+    <div class="brand-wrapper">
+      <!-- Jika kamu punya logo.png di repositori GitHub -->
+      <img src="logo.png" alt="Logo" class="app-logo" onerror="this.style.display='none'">
+      <div>
+        <h1>Keuangan Kita</h1>
+        <p>Pro Financial Dashboard</p>
+      </div>
+    </div>
+    <div class="topbar-actions">
+      <nav id="mainNav" class="nav-links hidden">
+        <button type="button" class="nav-btn active" data-page="dashboard">Dashboard</button>
+        <button type="button" class="nav-btn" data-page="date">Keuangan Date</button>
+        <button type="button" class="nav-btn" data-page="tabungan">Tabungan</button>
+        <button type="button" class="nav-btn" data-page="pribadi">Keuangan Pribadi</button>
+      </nav>
+      <button id="logoutBtn" type="button" class="ghost hidden">Keluar</button>
+    </div>
+  </header>
   <header class="topbar">
     <div>
       <h1>Keuangan Kita</h1>
