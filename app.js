@@ -197,8 +197,11 @@ function render() {
   const sumInc = filtered.filter(t => t.type === "income").reduce((s, t) => s + t.amount, 0);
   const sumExp = filtered.filter(t => t.type === "expense").reduce((s, t) => s + t.amount, 0);
   const calcNet = (w) => filtered.filter(t => t.wallet === w).reduce((s, t) => s + (t.type === "income" ? t.amount : -t.amount), 0);
+  const netTabungan = calcNet("pasangan");
+// Total Aset = Total Tabungan + Total Aset Investasi (IDR + USD Rate PayPal)
+  const totalInvestasiDanTabungan = netTabungan + totalInvConverted;
 
-  $("dashTotalNet").textContent = rupiah(sumInc - sumExp);
+  $("dashTotalNet").textContent = rupiah(totalInvestasiDanTabungan);
   $("dashNetDate").textContent = rupiah(calcNet("bersama"));
   $("dashNetTabungan").textContent = rupiah(calcNet("pasangan"));
   $("dashNetPribadi").textContent = rupiah(calcNet("hilal"));
