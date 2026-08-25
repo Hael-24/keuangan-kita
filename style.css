@@ -249,3 +249,23 @@ dialog {
   width: min(400px, 90%);
   color: #f8fafc;
 }
+
+/* Membuat Riwayat Transaksi Dapat Di-scroll */
+.transactions {
+  max-height: 320px;       /* Batasi tinggi area transaksi */
+  overflow-y: auto;        /* Aktifkan scrollbar vertikal jika melampaui tinggi */
+  padding-right: 6px;      /* Jarak agar text tidak mepet scrollbar */
+}
+
+/* Kustomisasi Scrollbar Keren (Theme Matching) */
+.transactions::-webkit-scrollbar {
+  width: 6px;
+}
+.transactions::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 4px;
+}
+.transactions::-webkit-scrollbar-thumb {
+  background: #0284c7;
+  border-radius: 4px;
+}
