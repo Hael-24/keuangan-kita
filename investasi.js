@@ -58,8 +58,8 @@ $("txForm").onsubmit = async (e) => {
     type: "income", 
     amount: Number($("txAmount").value),
     category: $("txCategory").value,
-    wallet: "hilal", // <-- UBAH JADI "hilal" AGAR DITERIMA DATABASE
-    note: `[INVESTASI] ${noteWithCurrency}` // <-- TAMBAHKAN TAG [INVESTASI]
+    wallet: "investasi_hilal", // Wallet khusus mandiri
+    note: noteWithCurrency
   };
 
   let res = txId 
@@ -102,10 +102,9 @@ window.deleteTx = async (id) => {
 };
 
 async function loadInvestments() {
-  const { data, error } = await sb.from("transactions").select("*").eq("wallet", "hilal").order("date", { ascending: false });
+  const { data, error } = await sb.from("transactions").select("*").eq("wallet", "investasi_hilal").order("date", { ascending: false });
   if (error) return console.error(error);
-  // Filter khusus hanya mengambil transaksi yang punya catatan [INVESTASI]
-  investments = (data || []).filter(t => t.note && t.note.includes("[INVESTASI]"));
+  investments = data || [];
   render();
 }
 
