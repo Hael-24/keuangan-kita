@@ -1,36 +1,323 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+
 *{box-sizing:border-box}
-body{margin:0;font-family:Inter,system-ui,-apple-system,sans-serif;background:#f4f6f9;color:#1e293b}
-.topbar{background:#fff;border-bottom:1px solid #e2e8f0;padding:14px 24px;display:flex;justify-content:space-between;align-items:center}
-.brand{display:flex;align-items:center;gap:10px}.brand h1{margin:0;font-size:20px}
-.badge{background:#e0e7ff;color:#4338ca;font-size:11px;padding:3px 8px;border-radius:6px;font-weight:600}
-.topbar-actions{display:flex;align-items:center;gap:16px}
-.nav-links{display:flex;gap:6px}
-.nav-btn{background:transparent;color:#64748b;border:0;padding:8px 14px;border-radius:8px;font-weight:500;cursor:pointer}
-.nav-btn.active{background:#eff6ff;color:#2563eb;font-weight:600}
-.container{max-width:1100px;margin:20px auto;padding:0 16px}
-.card{background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:20px;box-shadow:0 1px 3px rgba(0,0,0,.05)}
-.global-filter{margin-bottom:16px;display:flex;align-items:center;gap:12px;padding:12px 20px}
-.global-filter label{font-size:13px;font-weight:600;color:#64748b}
-.global-filter input{width:auto;margin:0}
-.grid{display:grid;gap:16px}
-.stats{grid-template-columns:repeat(3,1fr);margin-bottom:16px}
-.stats-4{grid-template-columns:repeat(4,1fr);margin-bottom:16px}
-.stat{background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:16px}
-.stat.primary{background:#2563eb;color:#fff}.stat.primary span{color:#bfdbfe}
-.stat span{display:block;color:#64748b;font-size:12px;margin-bottom:6px}
-.stat strong{font-size:20px}
-.two{grid-template-columns:1fr 1.2fr}
-.module-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
-.summary-list{display:flex;flex-direction:column;gap:12px;margin-top:12px}
-.summary-item{display:flex;justify-content:space-between;padding:12px;background:#f8fafc;border-radius:8px}
-input,select,button{font:inherit}
-input,select{width:100%;padding:10px 12px;border:1px solid #cbd5e1;border-radius:8px;margin:6px 0 12px}
-button{border:0;border-radius:8px;padding:10px 16px;background:#2563eb;color:#fff;font-weight:600;cursor:pointer}
-button.ghost{background:#f1f5f9;color:#475569}
-.hidden{display:none!important}
-.tabs{display:flex;gap:8px;margin-bottom:16px}.tab{background:#f1f5f9;color:#475569}.tab.active{background:#2563eb;color:#fff}
-.categoryRow{margin:10px 0}.categoryMeta{display:flex;justify-content:space-between;font-size:13px}
-.bar{height:6px;background:#f1f5f9;border-radius:99px;overflow:hidden;margin-top:4px}.bar i{display:block;height:100%;background:#2563eb}
-.tx{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #f1f5f9}
-.money{font-weight:700}.expenseMoney{color:#dc2626}.incomeMoney{color:#16a34a}
-dialog{border:0;border-radius:12px;padding:20px;width:min(400px,90%)}
+body {
+  margin: 0;
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  /* Latar Gelap Futuristik dengan Efek Gradient Subtle */
+  background: #090d16;
+  background-image: 
+    radial-gradient(at 10% 10%, rgba(30, 58, 138, 0.25) 0px, transparent 50%),
+    radial-gradient(at 90% 90%, rgba(14, 165, 233, 0.15) 0px, transparent 50%);
+  background-attachment: fixed;
+  color: #f1f5f9;
+  min-height: 100vh;
+}
+
+/* Header Transparan & Frosted Glass */
+.topbar {
+  background: rgba(15, 23, 42, 0.75);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 14px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+.brand-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Styling Logo */
+.app-logo {
+  height: 38px;
+  width: auto;
+  filter: drop-shadow(0 0 8px rgba(56, 189, 248, 0.4));
+}
+
+.topbar h1 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  background: linear-gradient(135deg, #ffffff 0%, #cbd5e1 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.topbar p {
+  margin: 2px 0 0;
+  color: #64748b;
+  font-size: 11px;
+}
+
+.topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.nav-links {
+  display: flex;
+  gap: 6px;
+}
+
+/* Tombol Navigasi Neon Subtle */
+.nav-btn {
+  background: transparent;
+  border: 1px solid transparent;
+  padding: 8px 14px;
+  border-radius: 10px;
+  color: #94a3b8;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.nav-btn:hover {
+  color: #f1f5f9;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.nav-btn.active {
+  background: rgba(14, 165, 233, 0.12);
+  color: #38bdf8;
+  border-color: rgba(56, 189, 248, 0.3);
+  box-shadow: 0 0 12px rgba(56, 189, 248, 0.15);
+}
+
+.container {
+  max-width: 1050px;
+  margin: 28px auto;
+  padding: 0 16px;
+}
+
+/* Kartu Efek Kaca (Glassmorphism) */
+.card, .stat {
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+}
+
+.stat.primary {
+  background: linear-gradient(135deg, rgba(14, 165, 233, 0.2) 0%, rgba(30, 58, 138, 0.3) 100%);
+  border: 1px solid rgba(56, 189, 248, 0.3);
+  box-shadow: 0 0 20px rgba(56, 189, 248, 0.1);
+}
+
+.stat.primary span {
+  color: #7dd3fc;
+}
+
+.stat span {
+  display: block;
+  color: #94a3b8;
+  font-size: 12px;
+  font-weight: 500;
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.stat strong {
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+
+.stat-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 10px;
+  margin-top: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.03);
+}
+
+.toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 20px;
+}
+
+.toolbar label {
+  font-size: 12px;
+  color: #94a3b8;
+  display: block;
+  margin-bottom: 6px;
+}
+
+.toolbar input {
+  margin: 0;
+}
+
+.grid {
+  display: grid;
+  gap: 16px;
+}
+
+.stats {
+  grid-template-columns: repeat(3, 1fr);
+  margin-bottom: 16px;
+}
+
+.stats-4 {
+  grid-template-columns: repeat(4, 1fr);
+  margin-bottom: 16px;
+}
+
+.two {
+  grid-template-columns: 1fr 1.3fr;
+}
+
+/* Form Input & Select Dark Theme */
+input, select, button {
+  font: inherit;
+}
+
+input, select {
+  width: 100%;
+  padding: 12px 14px;
+  background: rgba(15, 23, 42, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
+  color: #f8fafc;
+  margin: 6px 0 14px;
+  outline: none;
+  transition: all 0.2s;
+}
+
+input:focus, select:focus {
+  border-color: #38bdf8;
+  box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.2);
+}
+
+button {
+  border: 0;
+  border-radius: 10px;
+  padding: 12px 18px;
+  background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(2, 132, 199, 0.35);
+  transition: all 0.2s;
+}
+
+button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(2, 132, 199, 0.45);
+}
+
+button.ghost {
+  background: rgba(255, 255, 255, 0.06);
+  color: #cbd5e1;
+  box-shadow: none;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+button.ghost:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.hidden {
+  display: none !important;
+}
+
+.tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+  background: rgba(15, 23, 42, 0.6);
+  padding: 4px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.tab {
+  flex: 1;
+  background: transparent;
+  color: #94a3b8;
+  box-shadow: none;
+  padding: 10px;
+}
+
+.tab.active {
+  background: #0284c7;
+  color: #fff;
+  box-shadow: 0 2px 10px rgba(2, 132, 199, 0.3);
+}
+
+.categoryRow {
+  margin: 12px 0;
+}
+
+.categoryMeta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  color: #cbd5e1;
+}
+
+.bar {
+  height: 6px;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 99px;
+  overflow: hidden;
+  margin-top: 6px;
+}
+
+.bar i {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, #38bdf8, #818cf8);
+  border-radius: 99px;
+}
+
+.tx {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.money {
+  font-weight: 700;
+}
+
+.expenseMoney {
+  color: #f87171;
+}
+
+.incomeMoney {
+  color: #4ade80;
+}
+
+/* Modal / Dialog Futuristik */
+dialog {
+  background: #0f172a;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 20px;
+  padding: 24px;
+  width: min(420px, 92%);
+  color: #f8fafc;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+}
+
+dialog::backdrop {
+  background: rgba(3, 7, 18, 0.7);
+  backdrop-filter: blur(8px);
+}
