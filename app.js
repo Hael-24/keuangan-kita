@@ -2,6 +2,7 @@ const SUPABASE_URL = "https://hlyzobxyijwndohxwhuo.supabase.co";
 const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhseXpvYnh5aWp3bmRvaHh3aHVvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc0NjQ5NzksImV4cCI6MjEwMzA0MDk3OX0.4eAwD2XB0OMBaoe0wcXHgi7b42r4B8GC6qV2iU6mTIE";
 
 let sb = null, authMode = "login", transactions = [], activePage = "dashboard";
+let cashChart = null; // Penampung objek Chart.js
 
 const $ = id => document.getElementById(id);
 const rupiah = n => new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 }).format(n);
@@ -165,7 +166,7 @@ function render() {
   $("dashNetPribadi").textContent = rupiah(calcNet("hilal"));
   $("income").textContent = rupiah(sumInc);
   $("expense").textContent = rupiah(sumExp);
-  $("dashTransactions").innerHTML = filtered.slice(0, 5).map(t => renderTxRow(t)).join("") || '<p class="muted">Belum ada transaksi.</p>';
+  $("dashTransactions").innerHTML = filtered.slice(0, 20).map(t => renderTxRow(t)).join("") || '<p class="muted">Belum ada transaksi.</p>';
 
   // Render Modul Spesifik
   if (activePage !== "dashboard") {
@@ -189,6 +190,8 @@ function render() {
 
     $("transactions").innerHTML = modTx.map(t => renderTxRow(t)).join("") || '<p class="muted">Belum ada transaksi di modul ini.</p>';
   }
+  // Tambahkan baris ini di paling bawah fungsi render()
+  renderChart(sumInc, sumExp);
 }
 
 function renderTxRow(t) {
@@ -209,4 +212,41 @@ function renderTxRow(t) {
 
 function escapeHtml(s) {
   return String(s).replace(/[&<>"']/g, m => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;" }[m]));
+}
+// Fungsi Membuat / Update Diagram Pie Arus Kas
+function renderChart(income, expense) {
+  const ctx = document.getElementById("cashflowChart");
+  if (!ctx) return;
+
+  // Hapus chart lama sebelum membuat chart baru agar tidak bertumpuk saat ganti bulan
+  if (cashChart) {
+    cashChart.destroy();
+  }
+
+  cashChart = new Chart(ctx, {
+    type: "doughnut", // Jenis pie chart donat
+    data: {
+      labels: ["Pemasukan", "Pengeluaran"],
+      datasets: [{
+        data: [income, expense],
+        backgroundColor: ["#4ade80", "#f87171"], // Warna Hijau (Pemasukan) & Merah (Pengeluaran)
+        borderWidth: 0,
+        hoverOffset: 6
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          position: "bottom",
+          labels: {
+            color: "#94a3b8",
+            font: { size: 12 }
+          }
+        }
+      },
+      cutout: "70%" // Lebar lubang tengah donat
+    }
+  });
 }
