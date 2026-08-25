@@ -168,15 +168,21 @@ async function loadTransactions() {
 }
 
 function render() {
-  const month = $("month").value;
-  const filtered = transactions.filter(t => t.date?.slice(0, 7) === month);
+  const selectedMonth = $("month").value;
 
-  // Kalkulasi Total Investasi Hilal (IDR + USD dikurangi Rp500)
-  const paypalRate = Math.max(0, usdToIdrRate - 550);
+  // 1. Data khusus transaksi bulan yang dipilih (untuk grafik & ringkasan arus kas bulan ini)
+  const currentMonthTx = transactions.filter(t => t.date?.slice(0, 7) === selectedMonth);
+
+  // 2. Data kumulatif dari awal hingga bulan yang dipilih (untuk total saldo berkelanjutan)
+  const cumulativeTx = transactions.filter(t => t.date?.slice(0, 7) <= selectedMonth);
+
+  // --- KALKULASI TOTAL ASET INVESTASI (KUMULATIF) ---
+  const paypalRate = Math.max(0, usdToIdrRate - 500);
   let totalInvIdr = 0;
   let totalInvUsd = 0;
 
-  transactions.filter(t => t.wallet === "investasi_hilal").forEach(t => {
+  // Ambil semua transaksi investasi sampai bulan yang dipilih
+  transactions.filter(t => t.wallet === "investasi_hilal" && t.date?.slice(0, 7) <= selectedMonth).forEach(t => {
     if (t.note && t.note.includes("[USD]")) {
       totalInvUsd += t.amount;
     } else {
@@ -193,43 +199,56 @@ function render() {
     $("usdRateInfo").innerHTML = `Rate USD: ${rupiah(usdToIdrRate)}<br><b style="color:#38bdf8;">Rate PayPal: ${rupiah(paypalRate)}</b>`;
   }
 
-  // Render Dashboard
-  const sumInc = filtered.filter(t => t.type === "income").reduce((s, t) => s + t.amount, 0);
-  const sumExp = filtered.filter(t => t.type === "expense").reduce((s, t) => s + t.amount, 0);
-  const calcNet = (w) => filtered.filter(t => t.wallet === w).reduce((s, t) => s + (t.type === "income" ? t.amount : -t.amount), 0);
-  const netTabungan = calcNet("pasangan");
-// Total Aset = Total Tabungan + Total Aset Investasi (IDR + USD Rate PayPal)
+  // --- KALKULASI ARUS KAS BULAN INI (KHUSUS BULAN YANG DIPILIH) ---
+  const sumInc = currentMonthTx.filter(t => t.type === "income").reduce((s, t) => s + t.amount, 0);
+  const sumExp = currentMonthTx.filter(t => t.type === "expense").reduce((s, t) => s + t.amount, 0);
+
+  // --- KALKULASI SALDO BERKELANJUTAN (KUMULATIF SAMPAI BULAN INI) ---
+  const calcCumulativeNet = (w) => cumulativeTx.filter(t => t.wallet === w).reduce((s, t) => s + (t.type === "income" ? t.amount : -t.amount), 0);
+
+  const netDate = calcCumulativeNet("bersama");
+  const netTabungan = calcCumulativeNet("pasangan");
+  const netPribadi = calcCumulativeNet("hilal");
+
+  // Total Aset = Total Tabungan Kumulatif + Total Investasi Kumulatif
   const totalInvestasiDanTabungan = netTabungan + totalInvConverted;
 
+  // Tampilkan Nilai ke Tampilan Dashboard
   $("dashTotalNet").textContent = rupiah(totalInvestasiDanTabungan);
-  $("dashNetDate").textContent = rupiah(calcNet("bersama"));
-  $("dashNetTabungan").textContent = rupiah(calcNet("pasangan"));
-  $("dashNetPribadi").textContent = rupiah(calcNet("hilal"));
+  $("dashNetDate").textContent = rupiah(netDate);
+  $("dashNetTabungan").textContent = rupiah(netTabungan);
+  $("dashNetPribadi").textContent = rupiah(netPribadi);
+  
   $("income").textContent = rupiah(sumInc);
   $("expense").textContent = rupiah(sumExp);
-  $("dashTransactions").innerHTML = filtered.slice(0, 20).map(t => renderTxRow(t)).join("") || '<p class="muted">Belum ada transaksi.</p>';
+  $("dashTransactions").innerHTML = currentMonthTx.slice(0, 20).map(t => renderTxRow(t)).join("") || '<p class="muted">Belum ada transaksi bulan ini.</p>';
 
-  // Render Modul Spesifik
+  // --- RENDER MODUL SPESIFIK ---
   if (activePage !== "dashboard") {
     const target = walletMap[activePage];
-    const modTx = filtered.filter(t => t.wallet === target);
-    const inc = modTx.filter(t => t.type === "income").reduce((s, t) => s + t.amount, 0);
-    const exp = modTx.filter(t => t.type === "expense").reduce((s, t) => s + t.amount, 0);
+    
+    // Transaksi bulan ini untuk modul
+    const modTxCurrent = currentMonthTx.filter(t => t.wallet === target);
+    const inc = modTxCurrent.filter(t => t.type === "income").reduce((s, t) => s + t.amount, 0);
+    const exp = modTxCurrent.filter(t => t.type === "expense").reduce((s, t) => s + t.amount, 0);
+
+    // Saldo bersih kumulatif untuk modul tersebut
+    const modNetCumulative = calcCumulativeNet(target);
 
     $("modIncome").textContent = rupiah(inc);
     $("modExpense").textContent = rupiah(exp);
-    $("modNet").textContent = rupiah(inc - exp);
-    $("count").textContent = `${modTx.length} transaksi`;
+    $("modNet").textContent = rupiah(modNetCumulative);
+    $("count").textContent = `${modTxCurrent.length} transaksi bulan ini`;
 
     const cats = {};
-    modTx.filter(t => t.type === "expense").forEach(t => cats[t.category] = (cats[t.category] || 0) + t.amount);
+    modTxCurrent.filter(t => t.type === "expense").forEach(t => cats[t.category] = (cats[t.category] || 0) + t.amount);
     const max = Math.max(...Object.values(cats), 1);
 
     $("categories").innerHTML = Object.entries(cats).sort((a, b) => b[1] - a[1]).map(([c, v]) => 
       `<div class="categoryRow"><div class="categoryMeta"><span>${escapeHtml(c)}</span><b>${rupiah(v)}</b></div><div class="bar"><i style="width:${v / max * 100}%"></i></div></div>`
     ).join("") || '<p class="muted">Belum ada pengeluaran.</p>';
 
-    $("transactions").innerHTML = modTx.map(t => renderTxRow(t)).join("") || '<p class="muted">Belum ada transaksi di modul ini.</p>';
+    $("transactions").innerHTML = modTxCurrent.map(t => renderTxRow(t)).join("") || '<p class="muted">Belum ada transaksi di modul ini.</p>';
   }
 
   renderChart(sumInc, sumExp);
