@@ -308,3 +308,15 @@ dialog {
   margin: 0 auto;
   padding: 0 24px;
 }
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: 300px 1fr 380px; /* Kiri, Tengah, Kanan */
+  gap: 20px;
+  align-items: start;
+}
+
+/* Membatasi tinggi tabel transaksi agar tidak memanjangkan halaman */
+.transaksi-container {
+  max-height: 520px;
+  overflow-y: auto; /* Munculkan scrollbar internal jika transaksi banyak */
+}
