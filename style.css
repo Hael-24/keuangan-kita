@@ -2,7 +2,14 @@
 body {
   margin: 0;
   font-family: system-ui, -apple-system, sans-serif;
-  background-color: #090d16;
+  
+  /* Latar belakang gambar untuk SELURUH HALAMAN dengan efek overlay gelap */
+  background: linear-gradient(rgba(9, 13, 22, 0.85), rgba(9, 13, 22, 0.85)), url('bg-card.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed; /* Gambar tidak ikut ter-scroll */
+  
   color: #f1f5f9;
   min-height: 100vh;
 }
