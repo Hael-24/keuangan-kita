@@ -2,7 +2,7 @@ const SUPABASE_URL = "https://hlyzobxyijwndohxwhuo.supabase.co";
 const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhseXpvYnh5aWp3bmRvaHh3aHVvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc0NjQ5NzksImV4cCI6MjEwMzA0MDk3OX0.4eAwD2XB0OMBaoe0wcXHgi7b42r4B8GC6qV2iU6mTIE";
 
 let sb = null, investments = [];
-let usdToIdrRate = 15800; // Default rate kurs
+let usdToIdrRate = 15800; // Default rate estimasi
 
 const $ = id => document.getElementById(id);
 const rupiah = n => new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 }).format(n);
@@ -12,17 +12,17 @@ const today = new Date();
 $("month").value = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}`;
 $("txDate").value = today.toISOString().slice(0, 10);
 
-// Fetch Kurs Dollar Real-time dari API publik
+// Fetch Kurs Dollar Real-time dari API
 async function fetchUsdRate() {
   try {
     const res = await fetch("https://open.er-api.com/v6/latest/USD");
     const data = await res.json();
     if (data && data.rates && data.rates.IDR) {
       usdToIdrRate = data.rates.IDR;
-      render(); // Re-render setelah rate berhasil diambil
+      render(); // Re-render setelah rate didapat
     }
   } catch (e) {
-    console.warn("Gagal mengambil kurs online, menggunakan kurs estimasi default.", e);
+    console.warn("Gagal mengambil kurs online, menggunakan kurs default.", e);
   }
 }
 fetchUsdRate();
@@ -134,17 +134,19 @@ function render() {
     }
   });
 
-  // Hitung Kurs Estimasi PayPal (Rate USD - Rp500)
+  // Hitung Estimasi Rate PayPal (Rate USD - Rp500)
   const paypalRate = Math.max(0, usdToIdrRate - 500);
   const totalUsdInRupiah = totalUsd * paypalRate;
 
   $("totalIdr").textContent = rupiah(totalIdr);
   $("totalUsd").textContent = dollar(totalUsd);
   
+  // Tampilkan Konversi Rupiah
   if ($("totalUsdInIdr")) {
     $("totalUsdInIdr").textContent = `≈ ${rupiah(totalUsdInRupiah)}`;
   }
 
+  // Tampilkan Info Rate Kurs USD & PayPal
   if ($("usdRateInfo")) {
     $("usdRateInfo").innerHTML = `Rate USD: ${rupiah(usdToIdrRate)}<br><b style="color:#38bdf8;">Rate PayPal: ${rupiah(paypalRate)}</b>`;
   }
