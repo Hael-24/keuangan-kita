@@ -320,3 +320,10 @@ dialog {
   max-height: 520px;
   overflow-y: auto; /* Munculkan scrollbar internal jika transaksi banyak */
 }
+/* Aturan Tambahan CSS Cetak PDF */
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 15mm;
+  }
+}
