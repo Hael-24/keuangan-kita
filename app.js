@@ -281,6 +281,17 @@ function renderChart(income, expense) {
   const ctx = document.getElementById("cashflowChart");
   if (!ctx) return;
 
+  // Hitung persentase sisa/pemasukan tersimpan
+  const savedPercent = income > 0 
+    ? Math.max(0, Math.round(((income - expense) / income) * 100)) 
+    : 0;
+
+  const percentElem = document.getElementById("chartSavingsPercent");
+  if (percentElem) {
+    percentElem.textContent = `${savedPercent}%`;
+    percentElem.style.color = savedPercent < 0 ? "#f87171" : "#4ade80";
+  }
+
   if (cashChart) {
     cashChart.destroy();
   }
@@ -304,11 +315,11 @@ function renderChart(income, expense) {
           position: "bottom",
           labels: {
             color: "#94a3b8",
-            font: { size: 12 }
+            font: { size: 11 }
           }
         }
       },
-      cutout: "70%"
+      cutout: "75%" // Membuat lubang tengah sedikit lebih lebar untuk teks
     }
   });
 }
