@@ -269,56 +269,112 @@ dialog {
   background: #0284c7;
   border-radius: 4px;
 }
-/* Penyesuaian Tampilan Otomatis untuk Layar HP (Mobile Responsive) */
-@media (max-width: 768px) {
-  /* Ubah semua grid 3 atau 4 kolom menjadi 1 kolom ke bawah */
-  .stats-4, .stats, .two {
-    grid-template-columns: 1fr !important;
-  }
-  
-  /* Rapikan posisi di bagian atas header */
-  .topbar {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 12px;
-  }
-  
-  .topbar-actions {
-    width: 100%;
-    justify-content: space-between;
-    flex-wrap: wrap;
-  }
-  
-  .nav-links {
-    width: 100%;
-    overflow-x: auto;
-    padding-bottom: 4px;
-  }
-
-  /* Rapikan toolbar filter bulan */
-  .toolbar {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 10px;
-  }
-}
+/* Container Utama Responsif */
 .dashboard-container {
   width: 100%;
-  max-width: 1600px; /* Memanfaatkan layar lebar */
+  max-width: 1600px;
   margin: 0 auto;
-  padding: 0 24px;
+  padding: 0 16px;
 }
+
+/* Base Grid Layout */
 .dashboard-grid {
   display: grid;
-  grid-template-columns: 300px 1fr 380px; /* Kiri, Tengah, Kanan */
-  gap: 20px;
+  grid-template-columns: 280px 1fr 380px;
+  gap: 16px;
   align-items: start;
 }
 
-/* Membatasi tinggi tabel transaksi agar tidak memanjangkan halaman */
 .transaksi-container {
   max-height: 520px;
-  overflow-y: auto; /* Munculkan scrollbar internal jika transaksi banyak */
+  overflow-y: auto;
+}
+
+/* ========================================================
+   PENYESUAIAN KHUSUS LAYAR HP & TABLET (MEDIA QUERY)
+   ======================================================== */
+@media (max-width: 992px) {
+  .container {
+    padding: 0 10px;
+    margin: 10px auto;
+  }
+
+  /* 1. Paksa Grid 3-Kolom Dashboard & Grid Inline berubah jadi 1 Kolom Vertikal */
+  #page-dashboard > div[style*="grid-template-columns"],
+  .dashboard-grid,
+  .stats-4, 
+  .stats, 
+  .two {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+  }
+
+  /* 2. Rapikan Topbar / Header Navigation */
+  .topbar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+    padding: 10px 14px;
+  }
+
+  .topbar-actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  /* Menu Tab Navigasi Bisa Di-scroll Kesamping jika Panjang */
+  .nav-links {
+    width: 100%;
+    overflow-x: auto;
+    white-space: nowrap;
+    padding-bottom: 4px;
+    display: flex;
+    gap: 6px;
+  }
+
+  .nav-btn {
+    flex: 0 0 auto;
+    padding: 6px 10px;
+    font-size: 12px;
+  }
+
+  /* 3. Rapikan Toolbar Filter & Tombol Aksi Bulanan */
+  .toolbar {
+    flex-direction: column;
+    align-items: stretch !important;
+    gap: 10px;
+  }
+
+  .toolbar > div[style*="display: flex"] {
+    flex-wrap: wrap;
+    width: 100%;
+    gap: 8px !important;
+  }
+
+  .toolbar > div[style*="display: flex"] > div {
+    width: 100%;
+  }
+
+  /* Tombol Print & Reset Memenuhi Lebar Layar di HP */
+  .toolbar button {
+    flex: 1 1 auto;
+    text-align: center;
+    justify-content: center;
+  }
+
+  #addBtn {
+    width: 100%;
+    margin-top: 4px;
+  }
+
+  /* 4. Penyesuaian Font & Spacing untuk HP */
+  .stat strong {
+    font-size: 18px;
+  }
+
+  .stat-row {
+    font-size: 13px;
+  }
 }
 /* Aturan Tambahan CSS Cetak PDF */
 @media print {
