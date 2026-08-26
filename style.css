@@ -302,3 +302,9 @@ dialog {
     gap: 10px;
   }
 }
+.dashboard-container {
+  width: 100%;
+  max-width: 1600px; /* Memanfaatkan layar lebar */
+  margin: 0 auto;
+  padding: 0 24px;
+}
