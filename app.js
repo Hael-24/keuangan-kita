@@ -312,3 +312,165 @@ function renderChart(income, expense) {
     }
   });
 }
+
+// ==========================================
+// FUNGSI 1: EXPORT / PRINT LAPORAN BULANAN (PDF)
+// ==========================================
+window.cetakLaporanBulanan = function() {
+  const selectedMonth = $("month").value; // Format "YYYY-MM"
+  if (!selectedMonth) return alert("Pilih bulan periode terlebih dahulu!");
+
+  // Filter transaksi bulan ini (Excluding / Kecuali modul 'investasi_hilal')
+  const monthTx = transactions.filter(t => 
+    t.date?.slice(0, 7) === selectedMonth && t.wallet !== "investasi_hilal"
+  );
+
+  if (monthTx.length === 0) {
+    return alert(`Tidak ada data transaksi (selain Hilal) pada periode bulan ${selectedMonth}.`);
+  }
+
+  // Hitung Total Pemasukan & Pengeluaran Laporan
+  const totalInc = monthTx.filter(t => t.type === "income").reduce((s, t) => s + t.amount, 0);
+  const totalExp = monthTx.filter(t => t.type === "expense").reduce((s, t) => s + t.amount, 0);
+  const sisaSaldo = totalInc - totalExp;
+
+  // Nama Modul / Wallet Map
+  const walletNames = { bersama: "Keuangan Date", pasangan: "Tabungan", hilal: "Keuangan Fany" };
+
+  // Buat Konten HTML Khusus Cetak Laporan PDF
+  const printWindow = window.open("", "_blank");
+  printWindow.document.write(`
+    <!DOCTYPE html>
+    <html lang="id">
+    <head>
+      <meta charset="utf-8">
+      <title>Laporan Keuangan - ${selectedMonth}</title>
+      <style>
+        body { font-family: Arial, sans-serif; padding: 20px; color: #1e293b; line-height: 1.5; }
+        .header { text-align: center; border-bottom: 2px solid #0284c7; padding-bottom: 12px; margin-bottom: 20px; }
+        .header h1 { margin: 0; color: #0284c7; font-size: 22px; }
+        .header p { margin: 4px 0 0; color: #64748b; font-size: 13px; }
+        .summary-box { display: flex; justify-content: space-between; background: #f8fafc; border: 1px solid #e2e8f0; padding: 12px; border-radius: 8px; margin-bottom: 20px; }
+        .summary-item { text-align: center; }
+        .summary-item span { font-size: 11px; color: #64748b; display: block; }
+        .summary-item strong { font-size: 15px; }
+        .income { color: #16a34a; }
+        .expense { color: #dc2626; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 12px; }
+        th, td { border: 1px solid #cbd5e1; padding: 8px 10px; text-align: left; }
+        th { background-color: #f1f5f9; color: #334155; font-weight: bold; }
+        tr:nth-child(even) { background-color: #f8fafc; }
+        .footer { margin-top: 30px; font-size: 10px; color: #94a3b8; text-align: right; }
+        @media print {
+          body { padding: 0; }
+        }
+      </style>
+    </head>
+    <body>
+      <div class="header">
+        <h1>KEUANGAN KITA - LAPORAN TRANSAKSI</h1>
+        <p>Periode Bulan: <b>${selectedMonth}</b> (Kecuali Investasi Hilal)</p>
+      </div>
+
+      <div class="summary-box">
+        <div class="summary-item">
+          <span>TOTAL PEMASUKAN</span>
+          <strong class="income">${rupiah(totalInc)}</strong>
+        </div>
+        <div class="summary-item">
+          <span>TOTAL PENGELUARAN</span>
+          <strong class="expense">${rupiah(totalExp)}</strong>
+        </div>
+        <div class="summary-item">
+          <span>SURPLUS / SISA SALDO</span>
+          <strong style="color: #0284c7;">${rupiah(sisaSaldo)}</strong>
+        </div>
+      </div>
+
+      <h3>Daftar Rincian Transaksi (${monthTx.length})</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>No</th>
+            <th>Tanggal</th>
+            <th>Modul/Halaman</th>
+            <th>Kategori</th>
+            <th>Catatan</th>
+            <th style="text-align:right;">Nominal</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${monthTx.map((t, idx) => `
+            <tr>
+              <td>${idx + 1}</td>
+              <td>${t.date}</td>
+              <td>${walletNames[t.wallet] || t.wallet}</td>
+              <td>${escapeHtml(t.category)}</td>
+              <td>${escapeHtml(t.note || '-')}</td>
+              <td style="text-align:right;" class="${t.type === 'expense' ? 'expense' : 'income'}">
+                <b>${t.type === 'expense' ? '-' : '+'}${rupiah(t.amount)}</b>
+              </td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+
+      <div class="footer">
+        Dicetak pada: ${new Date().toLocaleString('id-ID')} | Keuangan Kita System
+      </div>
+
+      <script>
+        window.onload = function() {
+          window.print();
+          setTimeout(function() { window.close(); }, 500);
+        };
+      </script>
+    </body>
+    </html>
+  `);
+  printWindow.document.close();
+};
+
+// ==========================================
+// FUNGSI 2: RESET / HAPUS DATA BULANAN (SUPABASE)
+// ==========================================
+window.konfirmasiHapusBulanan = async function() {
+  const selectedMonth = $("month").value; // Format "YYYY-MM"
+  if (!selectedMonth) return alert("Pilih bulan periode terlebih dahulu!");
+
+  // Konfirmasi Tahap 1
+  const setuju1 = confirm(
+    `⚠️ PERINGATAN BERSAMA!\n\nApakah Anda yakin ingin MENGHAPUS SEMUA transaksi pada bulan [${selectedMonth}]?\n\nCatatan: Seluruh data 'Investasi Hilal' TIDAK AKAN terhapus.`
+  );
+  if (!setuju1) return;
+
+  // Konfirmasi Tahap 2 (Ketik Kunci Keamanan)
+  const setuju2 = prompt(`Ketik kata "HAPUS" untuk mengonfirmasi penghapusan permanen bulan ${selectedMonth}:`);
+  if (setuju2 !== "HAPUS") {
+    return alert("Penghapusan dibatalkan. Kata konfirmasi tidak sesuai.");
+  }
+
+  // Tentukan batas tanggal awal dan akhir bulan
+  const startDate = `${selectedMonth}-01`;
+  const endDate = `${selectedMonth}-31`;
+
+  try {
+    // Eksekusi Hapus ke Supabase Database
+    const { error } = await sb
+      .from("transactions")
+      .delete()
+      .gte("date", startDate)
+      .lte("date", endDate)
+      .neq("wallet", "investasi_hilal"); // Kecuali wallet 'investasi_hilal'
+
+    if (error) {
+      alert("Gagal menghapus data dari Supabase: " + error.message);
+    } else {
+      alert(`Berhasil mereset data transaksi bulan ${selectedMonth} (Data Investasi Hilal tetap aman).`);
+      loadTransactions(); // Re-fetch data dari Supabase
+    }
+  } catch (err) {
+    console.error("Error reset data:", err);
+    alert("Terjadi kesalahan sistem saat menghapus data.");
+  }
+};
