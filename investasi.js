@@ -2,6 +2,7 @@ const SUPABASE_URL = "https://hlyzobxyijwndohxwhuo.supabase.co";
 const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhseXpvYnh5aWp3bmRvaHh3aHVvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc0NjQ5NzksImV4cCI6MjEwMzA0MDk3OX0.4eAwD2XB0OMBaoe0wcXHgi7b42r4B8GC6qV2iU6mTIE";
 
 let sb = null, investments = [];
+let usdToIdrRate = 15800; // Default rate kurs
 
 const $ = id => document.getElementById(id);
 const rupiah = n => new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 }).format(n);
@@ -11,6 +12,21 @@ const today = new Date();
 $("month").value = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}`;
 $("txDate").value = today.toISOString().slice(0, 10);
 
+// Fetch Kurs Dollar Real-time dari API publik
+async function fetchUsdRate() {
+  try {
+    const res = await fetch("https://open.er-api.com/v6/latest/USD");
+    const data = await res.json();
+    if (data && data.rates && data.rates.IDR) {
+      usdToIdrRate = data.rates.IDR;
+      render(); // Re-render setelah rate berhasil diambil
+    }
+  } catch (e) {
+    console.warn("Gagal mengambil kurs online, menggunakan kurs estimasi default.", e);
+  }
+}
+fetchUsdRate();
+
 try {
   sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
   sb.auth.getSession().then(({ data }) => {
@@ -18,7 +34,7 @@ try {
       $("logoutBtn").classList.remove("hidden");
       loadInvestments();
     } else {
-      window.location.href = "index.html"; // Balik ke halaman awal jika belum masuk
+      window.location.href = "index.html";
     }
   });
 } catch(e) { console.error(e); }
@@ -29,7 +45,6 @@ $("logoutBtn").onclick = () => {
 
 $("month").onchange = loadInvestments;
 
-// Tombol Tambah Investasi
 $("addBtn").onclick = () => {
   $("txForm").reset();
   $("txId").value = "";
@@ -40,7 +55,6 @@ $("addBtn").onclick = () => {
 
 $("cancelTx").onclick = () => $("txDialog").close();
 
-// Submit Form (Tambah / Edit CRUD)
 $("txForm").onsubmit = async (e) => {
   e.preventDefault();
   const { data: { user } } = await sb.auth.getUser();
@@ -48,7 +62,6 @@ $("txForm").onsubmit = async (e) => {
   
   const currency = $("txCurrency").value;
   const rawNote = $("txNote").value.trim();
-  // Menyimpan format mata uang khusus di note agar independen
   const cleanNote = rawNote.replace(/^\[(USD|IDR)\]\s*/, "");
   const noteWithCurrency = `[${currency}] ${cleanNote}`;
 
@@ -58,7 +71,7 @@ $("txForm").onsubmit = async (e) => {
     type: "income", 
     amount: Number($("txAmount").value),
     category: $("txCategory").value,
-    wallet: "investasi_hilal", // Wallet khusus mandiri
+    wallet: "investasi_hilal",
     note: noteWithCurrency
   };
 
@@ -73,7 +86,6 @@ $("txForm").onsubmit = async (e) => {
   loadInvestments();
 };
 
-// Fungsi Edit Data
 window.editTx = (id) => {
   const item = investments.find(t => t.id == id);
   if (!item) return;
@@ -93,7 +105,6 @@ window.editTx = (id) => {
   $("txDialog").showModal();
 };
 
-// Fungsi Hapus Data
 window.deleteTx = async (id) => {
   if (!confirm("Yakin ingin menghapus catatan investasi ini?")) return;
   const { error } = await sb.from("transactions").delete().eq("id", id);
@@ -123,8 +134,20 @@ function render() {
     }
   });
 
+  // Hitung Kurs Estimasi PayPal (Rate USD - Rp500)
+  const paypalRate = Math.max(0, usdToIdrRate - 500);
+  const totalUsdInRupiah = totalUsd * paypalRate;
+
   $("totalIdr").textContent = rupiah(totalIdr);
   $("totalUsd").textContent = dollar(totalUsd);
+  
+  if ($("totalUsdInIdr")) {
+    $("totalUsdInIdr").textContent = `≈ ${rupiah(totalUsdInRupiah)}`;
+  }
+
+  if ($("usdRateInfo")) {
+    $("usdRateInfo").innerHTML = `Rate USD: ${rupiah(usdToIdrRate)}<br><b style="color:#38bdf8;">Rate PayPal: ${rupiah(paypalRate)}</b>`;
+  }
 
   $("transactions").innerHTML = filtered.map(t => {
     const isUsd = t.note && t.note.includes("[USD]");
