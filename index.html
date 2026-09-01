@@ -117,7 +117,8 @@
 
         <div class="grid two">
           <section class="card">
-            <h2>Pengeluaran per Kategori</h2>
+            <!-- Judul dirubah menjadi Transaksi per Kategori -->
+            <h2>Transaksi per Kategori</h2>
             <div id="categories" class="categoryList"></div>
           </section>
 
@@ -129,7 +130,7 @@
       </div>
 
       <!-- Kartu Tombol Menuju Investasi Hilal -->
-<!-- KARTU GABUNGAN INVESTASI HILAL (1 KARTU) -->
+      <!-- KARTU GABUNGAN INVESTASI HILAL (1 KARTU) -->
       <section class="card" style="margin-top:20px; background: linear-gradient(135deg, #0284c7 0%, #0f172a 100%); border: 1px solid #38bdf8; color:#fff; cursor:pointer;" onclick="window.location.href='investasi.html'">
         
         <!-- Baris Atas: Judul + Panah Navigasi -->
@@ -166,14 +167,16 @@
       </label>
       <label>Nominal<input id="txAmount" type="number" min="1" step="1" required placeholder="25000"></label>
       <label>Kategori
+        <!-- Daftar kategori baru -->
         <select id="txCategory">
           <option>Penghasilan</option>
-          <option>date</option>
-          <option>makan</option>
-          <option>transport</option>
-          <option>investasi</option>
-          <option>rumah</option>
-          <option>lainnya</option>
+          <option>Seabank</option>
+          <option>Mandiri</option>
+          <option>Date</option>
+          <option>Rumah</option>
+          <option>Pribadi</option>
+          <option>Emas</option>
+          <option>Ajaib</option>
         </select>
       </label>
       <label>Tujuan Halaman
