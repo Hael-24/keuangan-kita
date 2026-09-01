@@ -121,16 +121,22 @@ async function loadInvestments() {
 
 function render() {
   const month = $("month").value;
+
+  // 1. Filter transaksi KHUSUS bulan yang dipilih (untuk daftar riwayat)
   const filtered = investments.filter(t => t.date?.slice(0, 7) === month);
 
+  // 2. Hitung TOTAL AKUMULASI dari SELURUH transaksi hingga bulan yang dipilih
   let totalIdr = 0;
   let totalUsd = 0;
 
-  filtered.forEach(t => {
-    if (t.note && t.note.includes("[USD]")) {
-      totalUsd += t.amount;
-    } else {
-      totalIdr += t.amount;
+  investments.forEach(t => {
+    // Hanya hitung transaksi yang tanggalnya <= akhir bulan yang dipilih
+    if (t.date && t.date.slice(0, 7) <= month) {
+      if (t.note && t.note.includes("[USD]")) {
+        totalUsd += t.amount;
+      } else {
+        totalIdr += t.amount;
+      }
     }
   });
 
@@ -138,19 +144,19 @@ function render() {
   const paypalRate = Math.max(0, usdToIdrRate - 500);
   const totalUsdInRupiah = totalUsd * paypalRate;
 
+  // Render Total Akumulasi
   $("totalIdr").textContent = rupiah(totalIdr);
   $("totalUsd").textContent = dollar(totalUsd);
   
-  // Tampilkan Konversi Rupiah
   if ($("totalUsdInIdr")) {
     $("totalUsdInIdr").textContent = `≈ ${rupiah(totalUsdInRupiah)}`;
   }
 
-  // Tampilkan Info Rate Kurs USD & PayPal
   if ($("usdRateInfo")) {
     $("usdRateInfo").innerHTML = `Rate USD: ${rupiah(usdToIdrRate)}<br><b style="color:#38bdf8;">Rate PayPal: ${rupiah(paypalRate)}</b>`;
   }
 
+  // Render Daftar Riwayat Transaksi (Hanya bulan ini)
   $("transactions").innerHTML = filtered.map(t => {
     const isUsd = t.note && t.note.includes("[USD]");
     const cleanNote = t.note ? t.note.replace("[INVESTASI]", "").replace(/^\[(USD|IDR)\]\s*/, "").replace(/\[(USD|IDR)\]/, "").trim() : t.category;
@@ -169,7 +175,7 @@ function render() {
         </div>
       </div>
     </div>`;
-  }).join("") || '<p class="muted">Belum ada catatan investasi di periode bulan ini.</p>';
+  }).join("") || '<p class="muted">Belum ada catatan investasi baru di bulan ini.</p>';
 }
 
 function escapeHtml(s) {
