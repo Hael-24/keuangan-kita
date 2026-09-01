@@ -29,27 +29,7 @@
         <button type="button" id="addBtn">+ Tambah Investasi</button>
       </div>
 
-      <!-- Ringkasan Portfolio Independen -->
-      <div class="grid two" style="margin-bottom:16px;">
-        <div class="stat primary">
-          <span>Total Akumulasi Investasi (IDR)</span>
-          <strong id="totalIdr">Rp0</strong>
-        </div>
-
-        <!-- KARTU USD DENGAN BACKGROUND GAMBAR (SUDAH DIPERBAIKI) -->
-        <div class="stat" style="background: linear-gradient(135deg, rgba(15, 23, 42, 0.85) 0%, rgba(30, 41, 59, 0.85) 100%), url('bg-card.jpg'); background-size: cover; background-position: center; border: 1px solid #38bdf8; color:#fff; display:flex; justify-content:space-between; align-items:center;">
-          <div>
-            <span style="color:#94a3b8;">Total Akumulasi Investasi (USD)</span>
-            <strong id="totalUsd" style="color:#38bdf8;">$0.00</strong>
-            <span id="totalUsdInIdr" style="color:#4ade80; font-size:13px; font-weight:600; margin-top:2px; display:block;">≈ Rp0</span>
-          </div>
-          <span id="usdRateInfo" style="font-size: 11px; color: #94a3b8; text-align: right;">Kurs PayPal: Loading...</span>
-        </div>
-      </div>
-
-<!-- ... bagian atas tetap sama ... -->
-
-      <!-- Ringkasan Portfolio Independen (Kartu Total IDR & USD) -->
+      <!-- Ringkasan Portfolio (Total IDR & USD) -->
       <div class="grid two" style="margin-bottom:16px;">
         <div class="stat primary">
           <span>Total Akumulasi Investasi (IDR)</span>
@@ -66,7 +46,7 @@
         </div>
       </div>
 
-      <!-- KARTU 1: Ringkasan Portofolio Berkelanjutan Per Kategori -->
+      <!-- KARTU 1: PORTOFOLIO ASET BERKELANJUTAN -->
       <section class="card" style="margin-bottom:16px;">
         <div class="sectionHead">
           <h2>Rincian Portofolio Aset (Kumulatif)</h2>
@@ -74,15 +54,13 @@
         <div id="portfolioSummary" class="transactions"></div>
       </section>
 
-      <!-- KARTU 2: Daftar Riwayat Transaksi Bulanan -->
+      <!-- KARTU 2: RIWAYAT TRANSAKSI BULANAN -->
       <section class="card">
         <div class="sectionHead">
           <h2>Riwayat Transaksi Bulan Ini</h2>
         </div>
         <div id="transactions" class="transactions"></div>
       </section>
-
-<!-- ... bagian dialog modal & script tetap sama ... -->
     </section>
   </main>
 
@@ -106,6 +84,7 @@
           <option>Stockbit</option>
           <option>Paypal</option>
           <option>Emas</option>
+          <option>Seabank</option>
           <option>Lainnya</option>
         </select>
       </label>
