@@ -122,29 +122,39 @@ async function loadInvestments() {
 function render() {
   const month = $("month").value;
 
-  // 1. Filter transaksi KHUSUS bulan yang dipilih (untuk daftar riwayat)
+  // 1. Filter riwayat transaksi KHUSUS bulan yang dipilih
   const filtered = investments.filter(t => t.date?.slice(0, 7) === month);
 
-  // 2. Hitung TOTAL AKUMULASI dari SELURUH transaksi hingga bulan yang dipilih
+  // 2. Variabel total & akumulasi per kategori (hingga bulan yang dipilih)
   let totalIdr = 0;
   let totalUsd = 0;
+  const categoryTotals = {}; // Tempat menampung saldo per kategori
 
   investments.forEach(t => {
-    // Hanya hitung transaksi yang tanggalnya <= akhir bulan yang dipilih
+    // Hanya hitung transaksi hingga bulan yang dipilih
     if (t.date && t.date.slice(0, 7) <= month) {
-      if (t.note && t.note.includes("[USD]")) {
+      const isUsd = t.note && t.note.includes("[USD]");
+      const cat = t.category || "Lainnya";
+
+      if (!categoryTotals[cat]) {
+        categoryTotals[cat] = { idr: 0, usd: 0 };
+      }
+
+      if (isUsd) {
         totalUsd += t.amount;
+        categoryTotals[cat].usd += t.amount;
       } else {
         totalIdr += t.amount;
+        categoryTotals[cat].idr += t.amount;
       }
     }
   });
 
-  // Hitung Estimasi Rate PayPal (Rate USD - Rp500)
+  // Hitung Estimasi Rate PayPal
   const paypalRate = Math.max(0, usdToIdrRate - 500);
   const totalUsdInRupiah = totalUsd * paypalRate;
 
-  // Render Total Akumulasi
+  // Render Kartu Total
   $("totalIdr").textContent = rupiah(totalIdr);
   $("totalUsd").textContent = dollar(totalUsd);
   
@@ -156,7 +166,30 @@ function render() {
     $("usdRateInfo").innerHTML = `Rate USD: ${rupiah(usdToIdrRate)}<br><b style="color:#38bdf8;">Rate PayPal: ${rupiah(paypalRate)}</b>`;
   }
 
-  // Render Daftar Riwayat Transaksi (Hanya bulan ini)
+  // --- RENDER KARTU 1: RINCIAN PORTOFOLIO BERKELANJUTAN PER KATEGORI ---
+  const catKeys = Object.keys(categoryTotals);
+  if (catKeys.length > 0) {
+    $("portfolioSummary").innerHTML = catKeys.map(cat => {
+      const { idr, usd } = categoryTotals[cat];
+      let amountDisplay = [];
+      if (idr > 0) amountDisplay.push(rupiah(idr));
+      if (usd > 0) amountDisplay.push(dollar(usd));
+
+      return `<div class="tx" style="align-items:center;">
+        <div>
+          <div class="note"><b>${escapeHtml(cat)}</b></div>
+          <div class="meta" style="font-size:11px; color:#64748b; margin-top:2px;">Kategori Portofolio</div>
+        </div>
+        <div style="text-align:right;">
+          <div class="money" style="color:#38bdf8; font-weight:bold;">${amountDisplay.join(" + ") || "Rp0"}</div>
+        </div>
+      </div>`;
+    }).join("");
+  } else {
+    $("portfolioSummary").innerHTML = '<p class="muted">Belum ada portofolio aset terdaftar.</p>';
+  }
+
+  // --- RENDER KARTU 2: RIWAYAT TRANSAKSI BULAN INI ---
   $("transactions").innerHTML = filtered.map(t => {
     const isUsd = t.note && t.note.includes("[USD]");
     const cleanNote = t.note ? t.note.replace("[INVESTASI]", "").replace(/^\[(USD|IDR)\]\s*/, "").replace(/\[(USD|IDR)\]/, "").trim() : t.category;
@@ -175,7 +208,7 @@ function render() {
         </div>
       </div>
     </div>`;
-  }).join("") || '<p class="muted">Belum ada catatan investasi baru di bulan ini.</p>';
+  }).join("") || '<p class="muted">Belum ada transaksi di periode bulan ini.</p>';
 }
 
 function escapeHtml(s) {
