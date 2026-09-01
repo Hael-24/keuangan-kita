@@ -229,10 +229,13 @@ function render() {
   if (activePage !== "dashboard") {
     const target = walletMap[activePage];
     
-    // Transaksi bulan ini untuk modul
+    // 1. Transaksi bulan ini untuk modul (Khusus daftar transaksi & statistik atas)
     const modTxCurrent = currentMonthTx.filter(t => t.wallet === target);
     const inc = modTxCurrent.filter(t => t.type === "income").reduce((s, t) => s + t.amount, 0);
     const exp = modTxCurrent.filter(t => t.type === "expense").reduce((s, t) => s + t.amount, 0);
+
+    // 2. Transaksi akumulasi sampai bulan ini untuk kalkulasi per kategori
+    const modTxCumulative = cumulativeTx.filter(t => t.wallet === target);
 
     // Saldo bersih kumulatif untuk modul tersebut
     const modNetCumulative = calcCumulativeNet(target);
@@ -242,14 +245,46 @@ function render() {
     $("modNet").textContent = rupiah(modNetCumulative);
     $("count").textContent = `${modTxCurrent.length} transaksi bulan ini`;
 
+    // 3. Ubah Judul & Hitung Akumulasi per Kategori (Saldo atau Total Tabungan)
     const cats = {};
-    modTxCurrent.filter(t => t.type === "expense").forEach(t => cats[t.category] = (cats[t.category] || 0) + t.amount);
-    const max = Math.max(...Object.values(cats), 1);
 
-    $("categories").innerHTML = Object.entries(cats).sort((a, b) => b[1] - a[1]).map(([c, v]) => 
-      `<div class="categoryRow"><div class="categoryMeta"><span>${escapeHtml(c)}</span><b>${rupiah(v)}</b></div><div class="bar"><i style="width:${v / max * 100}%"></i></div></div>`
-    ).join("") || '<p class="muted">Belum ada pengeluaran.</p>';
+    if (activePage === "tabungan") {
+      if ($("catTitle")) $("catTitle").textContent = "Total Tabungan per Kategori";
+      
+      // Hitung total akumulasi pemasukan/tabungan per instrumen/kategori
+      modTxCumulative.forEach(t => {
+        // Jika ada penarikan/pengeluaran tabungan, kurangi nilai akumulasi
+        const netVal = t.type === "income" ? t.amount : -t.amount;
+        cats[t.category] = (cats[t.category] || 0) + netVal;
+      });
+    } else {
+      if ($("catTitle")) $("catTitle").textContent = "Saldo per Kategori";
+      
+      // Hitung akumulasi saldo (Pemasukan - Pengeluaran) per kategori dompet
+      modTxCumulative.forEach(t => {
+        const netVal = t.type === "income" ? t.amount : -t.amount;
+        cats[t.category] = (cats[t.category] || 0) + netVal;
+      });
+    }
 
+    // Cari nilai maksimum positif untuk pembanding lebar bar indikator
+    const max = Math.max(...Object.values(cats).map(v => Math.max(v, 0)), 1);
+
+    $("categories").innerHTML = Object.entries(cats)
+      .sort((a, b) => b[1] - a[1])
+      .map(([c, v]) => 
+        `<div class="categoryRow">
+          <div class="categoryMeta">
+            <span>${escapeHtml(c)}</span>
+            <b style="color: ${v < 0 ? '#f87171' : '#38bdf8'};">${rupiah(v)}</b>
+          </div>
+          <div class="bar">
+            <i style="width:${Math.max(0, (v / max) * 100)}%"></i>
+          </div>
+        </div>`
+      ).join("") || '<p class="muted">Belum ada data kategori.</p>';
+
+    // 4. Daftar Transaksi tetap menampilkan transaksi 1 bulan berjalan
     $("transactions").innerHTML = modTxCurrent.map(t => renderTxRow(t)).join("") || '<p class="muted">Belum ada transaksi di modul ini.</p>';
   }
 
