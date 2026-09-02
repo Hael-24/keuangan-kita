@@ -151,7 +151,7 @@ function render() {
   });
 
   // Hitung Estimasi Rate PayPal
-  const paypalRate = Math.max(0, usdToIdrRate - 500);
+  const paypalRate = Math.max(0, usdToIdrRate - 600);
   const totalUsdInRupiah = totalUsd * paypalRate;
 
   // Render Kartu Total
