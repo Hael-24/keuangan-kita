@@ -177,7 +177,7 @@ function render() {
   const cumulativeTx = transactions.filter(t => t.date?.slice(0, 7) <= selectedMonth);
 
   // --- KALKULASI TOTAL ASET INVESTASI (KUMULATIF) ---
-  const paypalRate = Math.max(0, usdToIdrRate - 500);
+  const paypalRate = Math.max(0, usdToIdrRate - 600);
   let totalInvIdr = 0;
   let totalInvUsd = 0;
 
