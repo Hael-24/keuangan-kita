@@ -113,7 +113,13 @@ window.deleteTx = async (id) => {
 };
 
 async function loadInvestments() {
-  const { data, error } = await sb.from("transactions").select("*").eq("wallet", "investasi_hilal").order("date", { ascending: false });
+  const { data, error } = await sb
+    .from("transactions")
+    .select("*")
+    .eq("wallet", "investasi_hilal")
+    .order("date", { ascending: false })
+    .order("id", { ascending: false }); // <--- Tambahkan baris ini!
+
   if (error) return console.error(error);
   investments = data || [];
   render();
