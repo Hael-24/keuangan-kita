@@ -161,7 +161,13 @@ window.deleteTx = async (id) => {
 };
 
 async function loadTransactions() {
-  const { data, error } = await sb.from("transactions").select("*").order("date", { ascending: false });
+  // Tambahkan pengurutan bertingkat: Pertama berdasarkan tanggal, Kedua berdasarkan id / created_at terbaru
+  const { data, error } = await sb
+    .from("transactions")
+    .select("*")
+    .order("date", { ascending: false })
+    .order("id", { ascending: false }); // <--- Tambahkan baris ini!
+
   if (error) return alert("Gagal mengambil data: " + error.message);
   transactions = data || [];
   render();
