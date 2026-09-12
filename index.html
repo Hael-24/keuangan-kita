@@ -116,11 +116,16 @@
         </div>
 
         <div class="grid two">
-          <section class="card">
-            <!-- Judul dirubah menjadi Transaksi per Kategori -->
-            <h2>Transaksi per Kategori</h2>
-            <div id="categories" class="categoryList"></div>
-          </section>
+            <section class="card">
+              <div class="sectionHead" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                <h2 style="margin: 0;">Transaksi per Kategori</h2>
+                <div class="cat-filter-tabs" style="display: flex; gap: 4px; background: #1e293b; padding: 3px; border-radius: 6px;">
+                  <button type="button" id="catFilterMonth" class="cat-tab active" onclick="switchCategoryFilter('month')" style="padding: 4px 10px; font-size: 11px; border-radius: 4px; border: none; cursor: pointer;">Bulan Ini</button>
+                  <button type="button" id="catFilterAll" class="cat-tab" onclick="switchCategoryFilter('all')" style="padding: 4px 10px; font-size: 11px; border-radius: 4px; border: none; background: transparent; color: #94a3b8; cursor: pointer;">Lifetime</button>
+                </div>
+              </div>
+              <div id="categories" class="categoryList"></div>
+            </section>
 
           <section class="card">
             <div class="sectionHead"><h2>Daftar Transaksi</h2><span id="count" class="muted"></span></div>
