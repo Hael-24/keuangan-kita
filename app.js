@@ -5,6 +5,32 @@ let sb = null, authMode = "login", transactions = [], activePage = "dashboard";
 let cashChart = null; // Penampung objek Chart.js
 let usdToIdrRate = 15800; // Variable simpan kurs (default)
 
+let categoryFilterMode = "month"; // Default "month" (Bulan Ini)
+
+window.switchCategoryFilter = function(mode) {
+  categoryFilterMode = mode;
+  
+  // Update tampilan tombol tab aktif
+  const btnMonth = $("catFilterMonth");
+  const btnAll = $("catFilterAll");
+
+  if (btnMonth && btnAll) {
+    if (mode === "month") {
+      btnMonth.style.background = "#0284c7";
+      btnMonth.style.color = "#fff";
+      btnAll.style.background = "transparent";
+      btnAll.style.color = "#94a3b8";
+    } else {
+      btnAll.style.background = "#0284c7";
+      btnAll.style.color = "#fff";
+      btnMonth.style.background = "transparent";
+      btnMonth.style.color = "#94a3b8";
+    }
+  }
+
+  render(); // Re-render modul
+};
+
 const $ = id => document.getElementById(id);
 const rupiah = n => new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 }).format(n);
 const today = new Date();
@@ -248,11 +274,14 @@ function render() {
     $("modNet").textContent = rupiah(modNetCumulative);
     $("count").textContent = `${modTxCurrent.length} transaksi bulan ini`;
 
-    // ALL-TIME TRANSAKSI PER KATEGORI (Berkelanjutan dari awal tanpa filter bulan)
-    const modTxAllTime = transactions.filter(t => t.wallet === target);
+// TRANSAKSI PER KATEGORI (Sesuai pilihan filter: Bulan Ini / Lifetime)
+    const modTxForCats = categoryFilterMode === "month" 
+      ? modTxCurrent 
+      : transactions.filter(t => t.wallet === target);
+      
     const cats = {};
 
-    modTxAllTime.forEach(t => {
+    modTxForCats.forEach(t => {
       const netVal = t.type === "income" ? t.amount : -t.amount;
       cats[t.category] = (cats[t.category] || 0) + netVal;
     });
