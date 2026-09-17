@@ -151,7 +151,7 @@
       </label>
 
       <label>Jumlah Target Budget (Rp)
-        <input id="budgetTarget" type="number" min="1" step="1000" placeholder="Contoh: 500000" required>
+        <input id="budgetTarget" type="number" min="0" step="any" placeholder="Contoh: 500000" required>
       </label>
 
       <div class="dialogActions" style="display:flex; justify-content:flex-end; gap:8px; margin-top:16px;">
@@ -342,7 +342,7 @@
                      class="table-input-realization" 
                      value="${realization}" 
                      min="0"
-                     step="1000"
+                     step="any"
                      onchange="updateRealization(${item.id}, this.value)"
                      placeholder="0" />
             </td>
