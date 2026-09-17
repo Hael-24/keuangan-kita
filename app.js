@@ -257,7 +257,7 @@ function render() {
   $("expense").textContent = rupiah(sumExp);
   $("dashTransactions").innerHTML = currentMonthTx.slice(0, 25).map(t => renderTxRow(t)).join("") || '<p class="muted">Belum ada transaksi bulan ini.</p>';
 
-  // --- RENDER MODUL SPESIFIK ---
+// --- RENDER MODUL SPESIFIK ---
   if (activePage !== "dashboard") {
     const target = walletMap[activePage];
     
@@ -265,12 +265,16 @@ function render() {
     const modTxCurrent = currentMonthTx.filter(t => t.wallet === target);
     const inc = modTxCurrent.filter(t => t.type === "income").reduce((s, t) => s + t.amount, 0);
     const exp = modTxCurrent.filter(t => t.type === "expense").reduce((s, t) => s + t.amount, 0);
+    const monthlyNet = inc - exp; // Selisih Pemasukan - Pengeluaran bulan ini
 
     // Saldo bersih kumulatif untuk modul tersebut
     const modNetCumulative = calcCumulativeNet(target);
 
     $("modIncome").textContent = rupiah(inc);
     $("modExpense").textContent = rupiah(exp);
+    if ($("modMonthlyNet")) {
+      $("modMonthlyNet").textContent = rupiah(monthlyNet);
+    }
     $("modNet").textContent = rupiah(modNetCumulative);
     $("count").textContent = `${modTxCurrent.length} transaksi bulan ini`;
 
