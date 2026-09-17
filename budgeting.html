@@ -197,17 +197,23 @@
     };
 
     // Ambil Data Budget dari Supabase
-// Ambil Data Budget dari Supabase
     async function loadBudgets() {
-      // 1. Pastikan user sudah login & dapatkan user_id
       const { data: { user } } = await sb.auth.getUser();
       if (!user) return;
 
-      const selectedMonth = $("month").value;
-      const startDate = `${selectedMonth}-01`;
-      const endDate = `${selectedMonth}-31`;
+      const selectedMonth = $("month").value; // Format: "YYYY-MM"
+      if (!selectedMonth) return;
 
-      // 2. Query data dengan menyertakan user_id agar lolos RLS Supabase
+      const [year, month] = selectedMonth.split("-").map(Number);
+      
+      // 1. Tanggal awal bulan (contoh: 2026-09-01)
+      const startDate = `${selectedMonth}-01`;
+      
+      // 2. Tanggal akhir bulan dihitung otomatis (Hari ke-0 bulan berikutnya = Hari terakhir bulan ini)
+      const lastDay = new Date(year, month, 0).getDate(); 
+      const endDate = `${selectedMonth}-${String(lastDay).padStart(2, "0")}`;
+
+      // 3. Query data
       const { data, error } = await sb
         .from("transactions")
         .select("*")
@@ -222,7 +228,7 @@
         return;
       }
 
-      // 3. Filter khusus item budget
+      // 4. Filter khusus item budget
       budgets = (data || []).filter(item => {
         try {
           const parsed = JSON.parse(item.note);
