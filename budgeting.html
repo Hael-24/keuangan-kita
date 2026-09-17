@@ -197,25 +197,32 @@
     };
 
     // Ambil Data Budget dari Supabase
+// Ambil Data Budget dari Supabase
     async function loadBudgets() {
+      // 1. Pastikan user sudah login & dapatkan user_id
+      const { data: { user } } = await sb.auth.getUser();
+      if (!user) return;
+
       const selectedMonth = $("month").value;
       const startDate = `${selectedMonth}-01`;
       const endDate = `${selectedMonth}-31`;
 
+      // 2. Query data dengan menyertakan user_id agar lolos RLS Supabase
       const { data, error } = await sb
         .from("transactions")
         .select("*")
+        .eq("user_id", user.id)
         .gte("date", startDate)
         .lte("date", endDate)
         .order("id", { ascending: true });
 
       if (error) {
-        console.error(error);
-        $("budgetTableBody").innerHTML = `<tr><td colspan="6" style="text-align:center; color:#f87171;">Gagal memuat data.</td></tr>`;
+        console.error("Detail Error Supabase:", error);
+        $("budgetTableBody").innerHTML = `<tr><td colspan="6" style="text-align:center; color:#f87171;">Gagal memuat data: ${error.message}</td></tr>`;
         return;
       }
 
-      // Filter khusus data budget
+      // 3. Filter khusus item budget
       budgets = (data || []).filter(item => {
         try {
           const parsed = JSON.parse(item.note);
