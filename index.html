@@ -106,13 +106,17 @@
         </div>
       </div>
 
-      <!-- HALAMAN 2, 3, 4: MODUL SPESIFIK -->
+<!-- HALAMAN 2, 3, 4: MODUL SPESIFIK -->
       <div id="page-module" class="page-sec hidden">
         <h2 id="moduleTitle" style="margin-bottom:12px;">Modul Keuangan</h2>
-        <div class="grid stats">
-          <div class="stat"><span>Pemasukan</span><strong id="modIncome">Rp0</strong></div>
-          <div class="stat"><span>Pengeluaran</span><strong id="modExpense">Rp0</strong></div>
-          <div class="stat"><span>Saldo Bersih</span><strong id="modNet">Rp0</strong></div>
+        <div class="grid stats-4">
+          <div class="stat"><span>Pemasukan (Bulan Ini)</span><strong id="modIncome" class="incomeMoney">Rp0</strong></div>
+          <div class="stat"><span>Pengeluaran (Bulan Ini)</span><strong id="modExpense" class="expenseMoney">Rp0</strong></div>
+          <div class="stat" style="background: rgba(14, 165, 233, 0.15); border: 1px solid rgba(56, 189, 248, 0.4);">
+            <span style="color: #38bdf8; font-weight: 600;">Sisa Bulan Ini (Arus Kas)</span>
+            <strong id="modMonthlyNet" style="color: #38bdf8;">Rp0</strong>
+          </div>
+          <div class="stat primary"><span>Total Saldo Akumulasi</span><strong id="modNet">Rp0</strong></div>
         </div>
 
         <div class="grid two">
