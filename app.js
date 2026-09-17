@@ -187,15 +187,16 @@ window.deleteTx = async (id) => {
 };
 
 async function loadTransactions() {
-  // Tambahkan pengurutan bertingkat: Pertama berdasarkan tanggal, Kedua berdasarkan id / created_at terbaru
   const { data, error } = await sb
     .from("transactions")
     .select("*")
     .order("date", { ascending: false })
-    .order("id", { ascending: false }); // <--- Tambahkan baris ini!
+    .order("id", { ascending: false });
 
   if (error) return alert("Gagal mengambil data: " + error.message);
-  transactions = data || [];
+
+  // Filter out data budgeting agar tidak masuk ke Keuangan Fany / Dashboard
+  transactions = (data || []).filter(t => t.category !== "Budgeting");
   render();
 }
 
