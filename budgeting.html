@@ -145,8 +145,8 @@
         date: `${selectedMonth}-01`,
         type: "expense",
         amount: Number($("budgetTarget").value),
-        category: "Rumah", // Kategori standar yang pasti ada di database
-        wallet: "hilal",  // Wallet valid
+        category: "Budgeting", // <--- Ubah menjadi "Budgeting"
+        wallet: "hilal",
         note: JSON.stringify({
           is_budget: true,
           name: $("budgetName").value.trim(),
