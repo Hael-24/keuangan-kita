@@ -4,83 +4,10 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Budgeting - Keuangan Kita</title>
+  <!-- Menghubungkan CSS Utama dan CSS Budgeting Khusus -->
   <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="budgeting.css">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <style>
-    .budget-table-wrapper {
-      width: 100%;
-      overflow-x: auto;
-      margin-top: 12px;
-    }
-    .budget-table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 14px;
-      text-align: left;
-    }
-    .budget-table th, .budget-table td {
-      padding: 10px 12px;
-      border-bottom: 1px solid #1e293b;
-      vertical-align: middle;
-    }
-    .budget-table th {
-      background: #1e293b;
-      color: #38bdf8;
-      font-weight: 600;
-    }
-    .budget-table tr:hover {
-      background: rgba(30, 41, 59, 0.5);
-    }
-    .status-completed {
-      background: rgba(74, 222, 128, 0.1) !important;
-    }
-    .badge-status {
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      padding: 4px 8px;
-      border-radius: 6px;
-      font-size: 12px;
-      font-weight: 600;
-    }
-    .badge-match {
-      background: rgba(74, 222, 128, 0.2);
-      color: #4ade80;
-      border: 1px solid #4ade80;
-    }
-    .badge-pending {
-      background: rgba(248, 113, 113, 0.15);
-      color: #f87171;
-      border: 1px solid #f87171;
-    }
-    .action-btn {
-      background: transparent;
-      border: none;
-      color: #38bdf8;
-      cursor: pointer;
-      font-weight: 600;
-      padding: 4px 8px;
-    }
-    .action-btn.delete {
-      color: #f87171;
-    }
-    /* Input Realisasi di Dalam Tabel */
-    .table-input-realization {
-      width: 130px;
-      padding: 6px 8px;
-      background: #1e293b;
-      border: 1px solid #334155;
-      border-radius: 6px;
-      color: #f8fafc;
-      text-align: right;
-      font-weight: 600;
-      margin: 0;
-    }
-    .table-input-realization:focus {
-      outline: none;
-      border-color: #0284c7;
-    }
-  </style>
 </head>
 <body>
   <header class="topbar">
@@ -124,7 +51,7 @@
             <tr>
               <th style="width: 40px; text-align: center;">No</th>
               <th>Nama Budget</th>
-              <th style="text-align: right;">Jumlah Budget</th>
+              <th style="text-align: right;">Jumlah Target</th>
               <th style="text-align: right; width: 160px;">Realisasi (Rp)</th>
               <th style="text-align: center;">Status Target</th>
               <th style="text-align: center; width: 120px;">Aksi</th>
@@ -140,7 +67,7 @@
     </section>
   </main>
 
-  <!-- MODAL HANYA NAMA DAN JUMLAH TARGET BUDGET -->
+  <!-- MODAL DIALOG INPUT BUDGET -->
   <dialog id="budgetDialog">
     <form method="dialog" id="budgetForm">
       <h2 id="dialogTitle">Tambah Budget Baru</h2>
@@ -195,14 +122,13 @@
 
     $("cancelBtn").onclick = () => $("budgetDialog").close();
 
-    // Simpan Data Budget (Nama & Jumlah Target Saja)
+    // Simpan / Edit Budget
     $("budgetForm").onsubmit = async (e) => {
       e.preventDefault();
       const { data: { user } } = await sb.auth.getUser();
       const budgetId = $("budgetId").value;
       const selectedMonth = $("month").value;
 
-      // Ambil realisasi lama jika ini proses edit nama/target
       let currentRealization = 0;
       if (budgetId) {
         const existingItem = budgets.find(b => b.id == budgetId);
@@ -219,8 +145,8 @@
         date: `${selectedMonth}-01`,
         type: "expense",
         amount: Number($("budgetTarget").value),
-        category: "Budgeting",
-        wallet: "hilal", // Menggunakan 'hilal' agar lolos database constraint
+        category: "Rumah", // Kategori standar yang pasti ada di database
+        wallet: "hilal",  // Wallet valid
         note: JSON.stringify({
           is_budget: true,
           name: $("budgetName").value.trim(),
@@ -241,7 +167,7 @@
       }
     };
 
-    // Update Nilai Realisasi Langsung dari Tabel
+    // Update Realisasi dari Tabel
     window.updateRealization = async (id, newRealizationValue) => {
       const item = budgets.find(b => b.id == id);
       if (!item) return;
@@ -270,7 +196,7 @@
       }
     };
 
-    // Ambil Data Budget
+    // Ambil Data Budget dari Supabase
     async function loadBudgets() {
       const selectedMonth = $("month").value;
       const startDate = `${selectedMonth}-01`;
@@ -279,7 +205,6 @@
       const { data, error } = await sb
         .from("transactions")
         .select("*")
-        .eq("category", "Budgeting")
         .gte("date", startDate)
         .lte("date", endDate)
         .order("id", { ascending: true });
@@ -290,11 +215,11 @@
         return;
       }
 
-      // Filter khusus yang memiliki flag is_budget
+      // Filter khusus data budget
       budgets = (data || []).filter(item => {
         try {
           const parsed = JSON.parse(item.note);
-          return parsed.is_budget === true;
+          return parsed && parsed.is_budget === true;
         } catch(e) {
           return false;
         }
@@ -352,7 +277,7 @@
                 : '<span class="badge-status badge-pending">⏳ Belum Sesuai</span>'}
             </td>
             <td style="text-align: center;">
-              <button class="action-btn" onclick="editBudget(${item.id})">Edit Target</button>
+              <button class="action-btn" onclick="editBudget(${item.id})">Edit</button>
               <button class="action-btn delete" onclick="deleteBudget(${item.id})">Hapus</button>
             </td>
           </tr>
