@@ -7,7 +7,6 @@
   <link rel="stylesheet" href="style.css">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
-    /* Styling khusus untuk Tabel Budgeting */
     .budget-table-wrapper {
       width: 100%;
       overflow-x: auto;
@@ -20,8 +19,9 @@
       text-align: left;
     }
     .budget-table th, .budget-table td {
-      padding: 12px 14px;
+      padding: 10px 12px;
       border-bottom: 1px solid #1e293b;
+      vertical-align: middle;
     }
     .budget-table th {
       background: #1e293b;
@@ -31,7 +31,6 @@
     .budget-table tr:hover {
       background: rgba(30, 41, 59, 0.5);
     }
-    /* Indicator Row */
     .status-completed {
       background: rgba(74, 222, 128, 0.1) !important;
     }
@@ -65,10 +64,25 @@
     .action-btn.delete {
       color: #f87171;
     }
+    /* Input Realisasi di Dalam Tabel */
+    .table-input-realization {
+      width: 130px;
+      padding: 6px 8px;
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 6px;
+      color: #f8fafc;
+      text-align: right;
+      font-weight: 600;
+      margin: 0;
+    }
+    .table-input-realization:focus {
+      outline: none;
+      border-color: #0284c7;
+    }
   </style>
 </head>
 <body>
-  <!-- HEADER NAVBAR -->
   <header class="topbar">
     <div class="brand-wrapper">
       <img src="logo.png" alt="Logo" class="app-logo" style="height:36px; width:auto;" onerror="this.style.display='none'">
@@ -81,15 +95,14 @@
       <nav class="nav-links">
         <a href="index.html" class="nav-btn" style="text-decoration:none;">Dashboard</a>
         <a href="index.html" class="nav-btn" style="text-decoration:none;">Tabungan</a>
-        <a href="index.html" class="nav-btn" style="text-decoration:none;">Keuangan Date</a>
-        <a href="index.html" class="nav-btn" style="text-decoration:none;">Keuangan Fany</a>
+        <a href="index.html" class="nav-btn" style="text-decoration:none;">Date</a>
+        <a href="index.html" class="nav-btn" style="text-decoration:none;">Fany</a>
         <a href="budgeting.html" class="nav-btn active" style="text-decoration:none;">Budgeting</a>
       </nav>
       <button id="logoutBtn" type="button" class="ghost">Keluar</button>
     </div>
   </header>
 
-  <!-- KONTEN UTAMA -->
   <main class="container">
     <div class="toolbar">
       <div>
@@ -99,7 +112,6 @@
       <button type="button" id="addBudgetBtn">+ Masukkan Budget</button>
     </div>
 
-    <!-- CARD RINGKASAN & TABEL BUDGET -->
     <section class="card">
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
         <h2>Daftar Target & Realisasi Budget</h2>
@@ -110,12 +122,12 @@
         <table class="budget-table">
           <thead>
             <tr>
-              <th style="width: 50px; text-align: center;">No</th>
+              <th style="width: 40px; text-align: center;">No</th>
               <th>Nama Budget</th>
               <th style="text-align: right;">Jumlah Budget</th>
-              <th style="text-align: right;">Realisasi</th>
+              <th style="text-align: right; width: 160px;">Realisasi (Rp)</th>
               <th style="text-align: center;">Status Target</th>
-              <th style="text-align: center;">Aksi</th>
+              <th style="text-align: center; width: 120px;">Aksi</th>
             </tr>
           </thead>
           <tbody id="budgetTableBody">
@@ -128,22 +140,18 @@
     </section>
   </main>
 
-  <!-- MODAL DIALOG INPUT / EDIT BUDGET -->
+  <!-- MODAL HANYA NAMA DAN JUMLAH TARGET BUDGET -->
   <dialog id="budgetDialog">
     <form method="dialog" id="budgetForm">
-      <h2 id="dialogTitle">Tambah Budget</h2>
+      <h2 id="dialogTitle">Tambah Budget Baru</h2>
       <input type="hidden" id="budgetId">
 
       <label>Nama Budget
-        <input id="budgetName" type="text" placeholder="Contoh: Belanja Bulanan / Tabungan Emas" required>
+        <input id="budgetName" type="text" placeholder="Contoh: Belanja Bulanan / Listrik" required>
       </label>
 
       <label>Jumlah Target Budget (Rp)
-        <input id="budgetTarget" type="number" min="0" step="1000" placeholder="Contoh: 1000000" required>
-      </label>
-
-      <label>Nominal Realisasi (Rp)
-        <input id="budgetRealization" type="number" min="0" step="1000" placeholder="Isi nominal jika sudah teralisasi" value="0">
+        <input id="budgetTarget" type="number" min="1" step="1000" placeholder="Contoh: 500000" required>
       </label>
 
       <div class="dialogActions" style="display:flex; justify-content:flex-end; gap:8px; margin-top:16px;">
@@ -154,7 +162,6 @@
   </dialog>
 
   <script>
-    // Konfigurasi Supabase
     const SUPABASE_URL = "https://hlyzobxyijwndohxwhuo.supabase.co";
     const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhseXpvYnh5aWp3bmRvaHh3aHVvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc0NjQ5NzksImV4cCI6MjEwMzA0MDk3OX0.4eAwD2XB0OMBaoe0wcXHgi7b42r4B8GC6qV2iU6mTIE";
 
@@ -165,7 +172,6 @@
 
     $("month").value = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}`;
 
-    // Inisialisasi Supabase Client & Cek Sesi Auth
     try {
       sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
       sb.auth.getSession().then(({ data }) => {
@@ -180,34 +186,45 @@
     $("logoutBtn").onclick = () => sb.auth.signOut().then(() => window.location.href = "index.html");
     $("month").onchange = loadBudgets;
 
-    // Buka Modal Tambah
     $("addBudgetBtn").onclick = () => {
       $("budgetForm").reset();
       $("budgetId").value = "";
-      $("budgetRealization").value = "0";
       $("dialogTitle").textContent = "Tambah Budget Baru";
       $("budgetDialog").showModal();
     };
 
     $("cancelBtn").onclick = () => $("budgetDialog").close();
 
-    // Simpan / Edit Budget ke Supabase
+    // Simpan Data Budget (Nama & Jumlah Target Saja)
     $("budgetForm").onsubmit = async (e) => {
       e.preventDefault();
       const { data: { user } } = await sb.auth.getUser();
       const budgetId = $("budgetId").value;
       const selectedMonth = $("month").value;
 
+      // Ambil realisasi lama jika ini proses edit nama/target
+      let currentRealization = 0;
+      if (budgetId) {
+        const existingItem = budgets.find(b => b.id == budgetId);
+        if (existingItem) {
+          try {
+            const parsed = JSON.parse(existingItem.note);
+            currentRealization = parsed.realization || 0;
+          } catch(e){}
+        }
+      }
+
       const row = {
         user_id: user.id,
-        date: `${selectedMonth}-01`, // Disimpan di awal bulan
+        date: `${selectedMonth}-01`,
         type: "expense",
         amount: Number($("budgetTarget").value),
         category: "Budgeting",
-        wallet: "budgeting",
+        wallet: "hilal", // Menggunakan 'hilal' agar lolos database constraint
         note: JSON.stringify({
+          is_budget: true,
           name: $("budgetName").value.trim(),
-          realization: Number($("budgetRealization").value || 0)
+          realization: currentRealization
         })
       };
 
@@ -224,7 +241,36 @@
       }
     };
 
-    // Ambil Data Budget dari Supabase
+    // Update Nilai Realisasi Langsung dari Tabel
+    window.updateRealization = async (id, newRealizationValue) => {
+      const item = budgets.find(b => b.id == id);
+      if (!item) return;
+
+      let name = "Budget";
+      try {
+        const parsed = JSON.parse(item.note);
+        name = parsed.name || "Budget";
+      } catch(e){}
+
+      const updatedNote = JSON.stringify({
+        is_budget: true,
+        name: name,
+        realization: Number(newRealizationValue || 0)
+      });
+
+      const { error } = await sb
+        .from("transactions")
+        .update({ note: updatedNote })
+        .eq("id", id);
+
+      if (error) {
+        alert("Gagal memperbarui realisasi: " + error.message);
+      } else {
+        loadBudgets();
+      }
+    };
+
+    // Ambil Data Budget
     async function loadBudgets() {
       const selectedMonth = $("month").value;
       const startDate = `${selectedMonth}-01`;
@@ -233,7 +279,7 @@
       const { data, error } = await sb
         .from("transactions")
         .select("*")
-        .eq("wallet", "budgeting")
+        .eq("category", "Budgeting")
         .gte("date", startDate)
         .lte("date", endDate)
         .order("id", { ascending: true });
@@ -244,16 +290,25 @@
         return;
       }
 
-      budgets = data || [];
+      // Filter khusus yang memiliki flag is_budget
+      budgets = (data || []).filter(item => {
+        try {
+          const parsed = JSON.parse(item.note);
+          return parsed.is_budget === true;
+        } catch(e) {
+          return false;
+        }
+      });
+
       renderTable();
     }
 
-    // Render Tabel Budgeting
+    // Render Tabel
     function renderTable() {
       const tbody = $("budgetTableBody");
       
       if (budgets.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:#94a3b8;">Belum ada target budget pada periode ini. Klik tombol "+ Masukkan Budget" untuk menambahkan.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:#94a3b8;">Belum ada target budget pada periode ini. Klik "+ Masukkan Budget" untuk menambahkan.</td></tr>`;
         $("budgetSummaryText").textContent = "Total Budget: Rp0";
         return;
       }
@@ -265,21 +320,16 @@
         let name = "Budget";
         let realization = 0;
 
-        // Parsing note yang berisi JSON metadata
         try {
           const parsed = JSON.parse(item.note);
-          name = parsed.name || item.note;
+          name = parsed.name || "Budget";
           realization = Number(parsed.realization || 0);
-        } catch (e) {
-          name = item.note || "Budget";
-          realization = 0;
-        }
+        } catch (e) {}
 
         const target = item.amount;
         totalTarget += target;
         totalRealization += realization;
 
-        // Cek Apakah Budget Terpenuhi (Sama/Melebihi Realisasi)
         const isMatched = realization >= target && target > 0;
 
         return `
@@ -287,49 +337,49 @@
             <td style="text-align: center; font-weight:600;">${index + 1}</td>
             <td style="font-weight:600; color:#f8fafc;">${escapeHtml(name)}</td>
             <td style="text-align: right; color:#38bdf8; font-weight:700;">${rupiah(target)}</td>
-            <td style="text-align: right; color:#cbd5e1; font-weight:600;">${rupiah(realization)}</td>
+            <td style="text-align: right;">
+              <input type="number" 
+                     class="table-input-realization" 
+                     value="${realization}" 
+                     min="0"
+                     step="1000"
+                     onchange="updateRealization(${item.id}, this.value)"
+                     placeholder="0" />
+            </td>
             <td style="text-align: center;">
               ${isMatched 
                 ? '<span class="badge-status badge-match">✓ Sesuai Target</span>' 
                 : '<span class="badge-status badge-pending">⏳ Belum Sesuai</span>'}
             </td>
             <td style="text-align: center;">
-              <button class="action-btn" onclick="editBudget(${item.id})">Edit</button>
+              <button class="action-btn" onclick="editBudget(${item.id})">Edit Target</button>
               <button class="action-btn delete" onclick="deleteBudget(${item.id})">Hapus</button>
             </td>
           </tr>
         `;
       }).join("");
 
-      $("budgetSummaryText").textContent = `Total Budget Target: ${rupiah(totalTarget)} | Terrealisasi: ${rupiah(totalRealization)}`;
+      $("budgetSummaryText").textContent = `Total Target: ${rupiah(totalTarget)} | Terrealisasi: ${rupiah(totalRealization)}`;
     }
 
-    // Modal Edit Data
     window.editBudget = (id) => {
       const item = budgets.find(b => b.id == id);
       if (!item) return;
 
       let name = "";
-      let realization = 0;
-
       try {
         const parsed = JSON.parse(item.note);
         name = parsed.name || "";
-        realization = parsed.realization || 0;
-      } catch (e) {
-        name = item.note || "";
-      }
+      } catch (e) {}
 
       $("budgetId").value = item.id;
       $("budgetName").value = name;
       $("budgetTarget").value = item.amount;
-      $("budgetRealization").value = realization;
 
-      $("dialogTitle").textContent = "Edit Budget";
+      $("dialogTitle").textContent = "Edit Target Budget";
       $("budgetDialog").showModal();
     };
 
-    // Hapus Data
     window.deleteBudget = async (id) => {
       if (!confirm("Yakin ingin menghapus item budget ini?")) return;
       const { error } = await sb.from("transactions").delete().eq("id", id);
